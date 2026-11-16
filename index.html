@@ -94,6 +94,8 @@
   .xfer.fail .bar > i { background: var(--red); }
   .xfer.paused .info { color: var(--amber); }
   .xfer.textmsg .bar { display: none; }
+  .xfer.skipped .bar { display: none; }
+  .xfer.skipped .fname { color: var(--muted); }
   .xfer .actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
   .xfer .actions > * { flex: 1; min-height: 38px; padding: 8px 12px; font-size: 14px; }
   .msg { white-space: pre-wrap; word-break: break-word; background: var(--soft); border-radius: 12px; padding: 10px 12px; margin-top: 8px; font-size: 15px; max-height: 240px; overflow: auto; }
@@ -308,6 +310,8 @@
     <label class="check"><input type="checkbox" id="setKeepAwake"> Keep the screen on while QuickShare is open</label>
     <p class="small note">Phones pause websites when the screen locks, which pauses transfers. The screen is always kept on during a transfer.</p>
     <label class="check"><input type="checkbox" id="setDiscover"> Find devices on the same Wi-Fi automatically</label>
+    <label class="check"><input type="checkbox" id="setSkipDup"> Skip files this device already received</label>
+    <p class="small note">If the same photo or file is sent again by mistake, it isn't downloaded twice. The sender can tap “Send anyway”. In a chosen save folder, a changed file with the same name replaces the old one.</p>
     <label class="check"><input type="checkbox" id="setHistory"> Keep a transfer history on this device</label>
     <details>
       <summary>Advanced</summary>
@@ -375,7 +379,7 @@
   // =====================================================================
   //  Constants & helpers
   // =====================================================================
-  const APP_VERSION = '3.0';
+  const APP_VERSION = '3.2';
   const PREFIX = 'qshare-v1-';
   const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const CHUNK = 64 * 1024;             // bytes per message (safe on Safari)
@@ -388,6 +392,7 @@
   const PARTIAL_KEEP_MS = 30 * 60 * 1000; // keep half-received files this long, waiting to resume
   const QR_TOKEN_MS = 15 * 60 * 1000, LINK_TOKEN_MS = 24 * 3600 * 1000;
   const MAX_TEXT = 100000;
+  const FP_SAMPLE = 256 * 1024;
   const JUNK = /^(\.DS_Store|Thumbs\.db|desktop\.ini|\._.*)$/i;
 
   const $ = (id) => document.getElementById(id);
@@ -441,7 +446,7 @@
   // =====================================================================
   //  Settings & identity
   // =====================================================================
-  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true, keepAwake: true, history: true },
+  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true, keepAwake: true, history: true, skipDup: true },
                                store.get('settings', {}));
   let myCode = store.get('code', null) || newCode();
   store.set('code', myCode);
@@ -721,6 +726,8 @@
     d.conn = conn; d.outgoing = outgoing; d.ready = false; d.unreachable = false;
     d.state = 'connecting';
     conn._chain = Promise.resolve();
+    // Handshake state exists from the start, so a message that arrives right as the link opens is never dropped.
+    conn._hs = { myNonce: randB64(18), myIntent: d.wantPair ? 'pair' : 'auto' };
     clearTimeout(d.openTimer);
     const started = Date.now();
     const check = () => {
@@ -733,7 +740,7 @@
       if (d.conn !== conn) return;
       d.lastRecv = Date.now();
       await identityReady;
-      const hs = conn._hs = { myNonce: randB64(18), myIntent: d.wantPair ? 'pair' : 'auto' };
+      const hs = conn._hs; if (d.wantPair) hs.myIntent = 'pair';
       sendc(conn, { t: 'hi3', v: 3, app: APP_VERSION, code: myCode, name: settings.name, platform: myPlatform, pub: myPub, nonce: hs.myNonce,
         intent: hs.myIntent, known: !!(d.paired && d.pub), token: !!(d.wantPair && d.pendingToken) });
     });
@@ -792,6 +799,7 @@
   // 3. Paired already on both sides → ready. Otherwise pair: QR/link secret (instant) or a 6-digit number shown on both screens.
   async function onHi3(d, conn, m) {
     const hs = conn._hs; if (!hs || hs.gotHi) return;
+    await identityReady;
     hs.gotHi = true;
     if (m.code !== d.code || typeof m.pub !== 'string' || typeof m.nonce !== 'string') { log(`Bad hello from ${d.code}`); dropConn(d, conn, 'protocol'); return; }
     d.name = clean(m.name) || d.name; d.platform = clean(m.platform, 12) || d.platform; d.appVersion = clean(m.app, 10); d.oldApp = false;
@@ -911,7 +919,8 @@
     const isNew = !d.paired;
     d.pub = pub; d.paired = true; d.legacy = false; d.keyMismatch = false; d.wantPair = false; d.pendingToken = null; d.paused = false;
     saveDevices();
-    if (isNew) log(`Paired with ${d.name}`);
+    if (isNew) { log(`Paired with ${d.name}`); toast(`✅ Paired with ${d.name}`); }
+    if ($('addDlg').open) $('addDlg').close(); // the other device scanned our QR: no need to keep showing it
   }
   function localOk(d, conn) {
     const hs = conn._hs; hs.localOk = true; hs.done = true;
@@ -1025,6 +1034,35 @@
   }
 
   // =====================================================================
+  //  Duplicate detection: a quick content fingerprint (size + SHA-256 of the start, middle and end; whole file if small).
+  //  The receiver remembers what it already has, so the same photo sent again by mistake is skipped automatically.
+  // =====================================================================
+  async function quickFp(file) {
+    const n = file.size, S = FP_SAMPLE;
+    const parts = n <= 3 * S ? [file] : [file.slice(0, S), file.slice(Math.floor(n / 2) - S / 2, Math.floor(n / 2) + S / 2), file.slice(n - S)];
+    const buf = await new Blob([n + '|', ...parts]).arrayBuffer();
+    return b64(new Uint8Array(await crypto.subtle.digest('SHA-256', buf)).slice(0, 18));
+  }
+  let received = store.get('received', {});
+  function rememberReceived(fp) {
+    if (!fp) return;
+    received[fp] = Date.now();
+    const keys = Object.keys(received);
+    if (keys.length > 6000) { keys.sort((a, b) => received[a] - received[b]); for (const k of keys.slice(0, keys.length - 5000)) delete received[k]; }
+    store.set('received', received);
+  }
+  async function existingInFolder(rx, m) {
+    // In a chosen save folder, look at the file that is really there.
+    try {
+      let dir = folderHandle;
+      const segs = rx.batch ? (rx.path.length && rx.path[0] === rx.batch.name ? [rx.batch.name, ...rx.path.slice(1)] : [rx.batch.name, ...rx.path]) : [];
+      for (const sname of segs) dir = await dir.getDirectoryHandle(sname);
+      const f = await (await dir.getFileHandle(safeName(rx.name))).getFile();
+      return f.size === rx.size && (await quickFp(f)) === m.fp;
+    } catch { return false; }
+  }
+
+  // =====================================================================
   //  Sending: per-device queue that survives disconnects and resumes
   // =====================================================================
   const isFinal = (j) => ['done', 'cancelled', 'failed'].includes(j.state);
@@ -1100,7 +1138,7 @@
       send(d, { t: 'batchend', id: b.id, cancelled });
       b.endSent = true;
       if (cancelled) b.group.finish('Cancelled', false);
-      else b.group.finish(`Sent ${done} of ${b.count} files to ${d.name} · ${fmtBytes(b.total)} in ${b.group.elapsed()}`, done === b.count);
+      else b.group.finish(`Sent ${done - (b.skipped || 0)} of ${b.count} files to ${d.name}` + (b.skipped ? ` · ${b.skipped} already there, skipped` : '') + ` · ${fmtBytes(b.total)} in ${b.group.elapsed()}`, done === b.count);
       if (!cancelled) addHistory({ dir: 'out', kind: 'folder', name: b.name, size: b.total, count: b.count, peer: d.name, ok: done === b.count });
     }
   }
@@ -1129,11 +1167,21 @@
     }
     if (job.batch) job.batch.group.paused(false);
     job.ui.status(job.batch ? `Sending ${job.name}…` : 'Starting…');
-    const meta = { t: 'file', id: job.id, name: job.name, size: job.size, type: job.type };
+    if (job.fp === undefined) { try { job.fp = await quickFp(job.file); } catch { job.fp = null; } }
+    if (d.conn !== conn || !conn.open) throw new ConnLost();
+    const meta = { t: 'file', id: job.id, name: job.name, size: job.size, type: job.type, fp: job.fp, force: !!job.force };
     if (job.batch) Object.assign(meta, { path: job.path, batch: { id: job.batch.id, name: job.batch.name, count: job.batch.count, total: job.batch.total } });
     if (!send(d, meta)) throw new ConnLost();
-    const reply = await waitFor(d, job.id, ['ready', 'got', 'cancel'], 20000);
+    const reply = await waitFor(d, job.id, ['ready', 'got', 'cancel', 'dup'], 30000);
     if (job.state === 'cancelled') { send(d, { t: 'abort', id: job.id }); return; }
+    if (reply.t === 'dup') {
+      job.state = 'done'; job.skipped = true;
+      if (job.batch) { job.batch.skipped = (job.batch.skipped || 0) + 1; job.ui.finish('', true); return; }
+      job.ui.finish(`Already on ${d.name}${reply.at ? ' (received ' + fmtWhen(reply.at) + ')' : ''} — skipped`, true);
+      job.ui.el.classList.add('skipped'); addSendAnyway(job);
+      addHistory({ dir: 'out', kind: 'file', name: job.name, size: job.size, peer: d.name, ok: true, note: 'skipped — already there' });
+      return;
+    }
     if (reply.t === 'got') { job.state = 'done'; job.ui.finish(`Delivered to ${d.name}`, true); histOut(job, true); return; }
     if (reply.t === 'cancel') { job.state = 'cancelled'; job.ui.finish('Cancelled by ' + d.name, false); return; }
     let offset = Math.max(0, Math.min(Number(reply.offset) || 0, job.size));
@@ -1170,6 +1218,13 @@
     job.ui.finish('Cancelled', false);
     if (job.batch && job.batch.jobs.every(isFinal)) finishBatches(job.d);
     updateTransfersUI(); applyKeepAwake();
+  }
+  function addSendAnyway(job) {
+    const b = document.createElement('button'); b.className = 'ghost'; b.textContent = 'Send anyway';
+    b.onclick = () => { b.remove(); job.ui.el.classList.remove('skipped'); job.state = 'queued'; job.tries = 0; job.force = true; job.skipped = false; job.ui.reset(); job.ui.onCancel(() => cancelJob(job));
+      job.ui.status(job.d.ready ? 'Waiting to send…' : `Waiting for ${job.d.name} to connect…`, true);
+      if (job.d.ready) pump(job.d); else connectTo(job.d.code, {}); updateTransfersUI(); };
+    job.ui.actions().append(b);
   }
   function addRetry(job) {
     const b = document.createElement('button'); b.className = 'ghost'; b.textContent = 'Try again';
@@ -1240,7 +1295,20 @@
     if (d.rx && d.rx.id !== id) pauseIncoming(d);
     const ib = m.batch && typeof m.batch === 'object' ? inBatch(d, m.batch) : null;
     if (ib && ib.cancelled) { send(d, { t: 'cancel', id }); return; }
-    rx = { id, name: clean(m.name || 'file', 255) || 'file', size, type: clean(m.type, 100), got: 0, d, path: ib ? safePath(m.path) : [],
+    const fp = typeof m.fp === 'string' && m.fp.length <= 40 ? m.fp : null;
+    const inFolderMode = settings.autoSave !== false && folderHandle && folderOk;
+    if (fp && settings.skipDup !== false && !m.force && (!ib || inFolderMode)) {
+      const probe = { name: clean(m.name || 'file', 255) || 'file', size, batch: ib, path: ib ? safePath(m.path) : [] };
+      const known = !ib && received[fp];
+      if (known || (inFolderMode && await existingInFolder(probe, m))) {
+        send(d, { t: 'dup', id, at: known || null });
+        if (ib) { ib.saved++; ib.skipped = (ib.skipped || 0) + 1; checkBatch(d, ib); }
+        else noteSkipped(d, probe.name);
+        log(`Skipped a file from ${d.name} that this device already has`);
+        return;
+      }
+    }
+    rx = { id, fp, name: clean(m.name || 'file', 255) || 'file', size, type: clean(m.type, 100), got: 0, d, path: ib ? safePath(m.path) : [],
            parts: [], pending: [], pendingBytes: 0, writer: null, handle: null, writeChain: Promise.resolve(), failed: false, paused: false,
            batch: ib, crc: 0xFFFFFFFF };
     d.partials.set(id, rx); d.rx = rx;
@@ -1250,13 +1318,34 @@
     send(d, { t: 'ready', id, offset: 0 });
     showTab('now'); updateTransfersUI(); applyKeepAwake();
   }
+  let skipNote = null;
+  function noteSkipped(d, name) {
+    // One quiet row (no popup) that counts files skipped because they were already here.
+    if (!skipNote || skipNote.d !== d || Date.now() - skipNote.at > 60000) {
+      const ui = xferRow('in', '', 0, d.name, 'textmsg'); ui.el.classList.add('skipped');
+      skipNote = { d, ui, n: 0, names: [] };
+      showTab('now');
+    }
+    skipNote.n++; skipNote.at = Date.now(); skipNote.names.push(name);
+    skipNote.ui.el.querySelector('.fname').textContent = `⏭ ${skipNote.n} file${skipNote.n > 1 ? 's' : ''} already here — skipped`;
+    skipNote.ui.finish(`From ${d.name}: ${skipNote.names.slice(-3).join(', ')}${skipNote.n > 3 ? '…' : ''}. Not downloaded again.`, true);
+    updateTransfersUI();
+  }
   async function batchDir(ib, path) {
-    if (!ib.top) { ib.topName = await uniqueDirName(folderHandle, ib.name); ib.top = await folderHandle.getDirectoryHandle(ib.topName, { create: true }); }
+    if (!ib.top) {
+      // Same folder sent again → reuse it and replace the files inside (only a *file* with that name forces a new name).
+      try { ib.topName = ib.name; ib.top = await folderHandle.getDirectoryHandle(ib.name, { create: true }); }
+      catch (e) { if (e.name !== 'TypeMismatchError') throw e; ib.topName = await uniqueDirName(folderHandle, ib.name); ib.top = await folderHandle.getDirectoryHandle(ib.topName, { create: true }); }
+    }
     let dir = ib.top, key = '';
     const segs = path.length && path[0] === ib.name ? path.slice(1) : path;
     for (const s of segs) {
       key += '/' + s;
-      if (!ib.dirs.has(key)) ib.dirs.set(key, await dir.getDirectoryHandle(s, { create: true }));
+      if (!ib.dirs.has(key)) {
+        let h; try { h = await dir.getDirectoryHandle(s, { create: true }); }
+        catch (e) { if (e.name !== 'TypeMismatchError') throw e; h = await dir.getDirectoryHandle(await uniqueDirName(dir, s), { create: true }); }
+        ib.dirs.set(key, h);
+      }
       dir = ib.dirs.get(key);
     }
     return dir;
@@ -1266,13 +1355,17 @@
       try {
         const dir = rx.batch ? await batchDir(rx.batch, rx.path) : folderHandle;
         rx.saveDir = dir;
-        rx.savedName = await uniqueName(dir, safeName(rx.name));
+        rx.savedName = safeName(rx.name); rx.existed = false;
+        try { await dir.getFileHandle(rx.savedName); rx.existed = true; }
+        catch (e) { if (e.name === 'TypeMismatchError') rx.savedName = await uniqueName(dir, rx.savedName); else if (e.name !== 'NotFoundError') throw e; }
+        // Same name → replaced. The browser writes to a temporary copy and swaps it in only when the file is complete,
+        // so a cancelled or interrupted transfer never damages the existing file.
         rx.handle = await dir.getFileHandle(rx.savedName, { create: true });
-        rx.writer = await rx.handle.createWritable();
+        rx.writer = await rx.handle.createWritable({ keepExistingData: false });
         rx.inFolder = true; return;
       } catch (e) {
         log('Saving into the chosen folder failed: ' + (e.message || e));
-        if (rx.handle && rx.saveDir) { try { await rx.saveDir.removeEntry(rx.savedName); } catch {} }
+        if (rx.handle && rx.saveDir && !rx.existed) { try { await rx.saveDir.removeEntry(rx.savedName); } catch {} }
         rx.handle = null; rx.writer = null; rx.inFolder = false; folderOk = false; renderFolderUI();
       }
     }
@@ -1324,8 +1417,9 @@
     d.partials.delete(id); d.completed.add(id);
     send(d, { t: 'got', id });
     rx.done = true;
+    if (!ib || rx.inFolder) rememberReceived(rx.fp);
     if (ib) {
-      if (rx.inFolder) ib.saved++;
+      if (rx.inFolder) { ib.saved++; if (rx.existed) ib.replaced = (ib.replaced || 0) + 1; }
       else ib.files.push({ name: [...(rx.path.length && rx.path[0] === ib.name ? rx.path.slice(1) : rx.path), safeName(rx.name)].join('/'), blob: file, size: rx.size, crc: (rx.crc ^ 0xFFFFFFFF) >>> 0 });
       rx.ui.finish('', true);
       checkBatch(d, ib);
@@ -1343,8 +1437,13 @@
   }
   function deliverFile(named, rx) {
     const auto = settings.autoSave !== false;
-    if (rx && rx.inFolder) return { saved: true, text: `saved to folder "${folderHandle.name}"` + (rx.savedName !== named.name ? ` as ${rx.savedName}` : '') };
-    if (auto && !isIOS) { const n = autoDownload(named); return { saved: true, text: 'saved to Downloads' + (n !== named.name ? ` as ${n}` : '') }; }
+    if (rx && rx.inFolder) return { saved: true, text: (rx.existed ? `replaced the old copy in folder "${folderHandle.name}"` : `saved to folder "${folderHandle.name}"`) + (rx.savedName !== named.name ? ` as ${rx.savedName}` : '') };
+    if (auto && !isIOS) {
+      const n = autoDownload(named);
+      // Downloads can't be overwritten by a website. Tell the person once how to get real replacing.
+      const hint = n !== named.name && canPickFolder && !store.get('replaceHintShown', false) ? (store.set('replaceHintShown', true), ' · to replace same-name files instead of keeping copies, choose a save folder in ⚙︎ Settings') : '';
+      return { saved: true, text: 'saved to Downloads' + (n !== named.name ? ` as ${n}` : '') + hint };
+    }
     if (auto && isIOS) { addPending(named); return { saved: false, text: 'tap “Save” at the top to keep it' }; }
     return { saved: false, text: 'tap Save to keep it' };
   }
@@ -1361,7 +1460,7 @@
     ib.done = true;
     const ok = ib.failed === 0 && n >= ib.count;
     if (ib.saved && !ib.files.length) {
-      ib.group.finish(`From ${d.name} · ${ib.saved} files · saved to folder "${folderHandle ? folderHandle.name : ''}/${ib.topName || ib.name}"`, ok);
+      ib.group.finish(`From ${d.name} · ${ib.saved - (ib.skipped || 0)} files saved to folder "${folderHandle ? folderHandle.name : ''}/${ib.topName || ib.name}"` + (ib.replaced ? ` · ${ib.replaced} replaced` : '') + (ib.skipped ? ` · ${ib.skipped} already there, skipped` : ''), ok);
     } else if (ib.files.length) {
       let zip;
       try { zip = new File([buildZip(ib.files)], ib.name + '.zip', { type: 'application/zip' }); }
@@ -1464,7 +1563,7 @@
     rx.failed = true; rx.parts = []; rx.pending = [];
     Promise.resolve(rx.ready).then(async () => {
       try { if (rx.writer) await rx.writer.abort(); } catch {}
-      try { if (rx.handle) { if (rx.inFolder) await rx.saveDir.removeEntry(rx.savedName); else if (opfsDir) await opfsDir.removeEntry(rx.id); } } catch {}
+      try { if (rx.handle) { if (rx.inFolder) { if (!rx.existed) await rx.saveDir.removeEntry(rx.savedName); } else if (opfsDir) await opfsDir.removeEntry(rx.id); } } catch {}
     });
   }
 
@@ -1603,7 +1702,7 @@
       const t = document.createElement('b'); t.textContent = h.kind === 'text' ? (h.dir === 'out' ? 'Message to ' : 'Message from ') + h.peer : h.name;
       const s = document.createElement('div'); s.className = 'small';
       s.textContent = (h.dir === 'out' ? (h.kind === 'text' ? '' : 'Sent to ' + h.peer + ' · ') : (h.kind === 'text' ? '' : 'From ' + h.peer + ' · ')) +
-        (h.kind === 'folder' ? h.count + ' files · ' : '') + (h.size != null && h.kind !== 'text' ? fmtBytes(h.size) + ' · ' : '') + fmtWhen(h.at) + (h.ok ? '' : ' · not completed');
+        (h.kind === 'folder' ? h.count + ' files · ' : '') + (h.size != null && h.kind !== 'text' ? fmtBytes(h.size) + ' · ' : '') + fmtWhen(h.at) + (h.note ? ' · ' + h.note : h.ok ? '' : ' · not completed');
       b.append(t);
       if (h.kind === 'text' && h.text) { const p = document.createElement('div'); p.className = 'prev'; p.textContent = h.text; b.append(p); }
       b.append(s);
@@ -1722,13 +1821,14 @@
   function renderFolderUI() {
     const auto = settings.autoSave !== false;
     $('folderRow').hidden = !canPickFolder;
-    $('folderLabel').textContent = folderHandle ? `Saving to folder: ${folderHandle.name}` + (folderOk ? '' : ' (needs your OK)') : 'Saving to: your Downloads folder';
+    $('folderLabel').textContent = folderHandle ? `Saving to folder: ${folderHandle.name} — files with the same name are replaced` + (folderOk ? '' : ' (needs your OK)') :
+      'Saving to: your Downloads folder (same names are kept as copies). Choose a folder to replace them instead.';
     $('clearFolderBtn').hidden = !folderHandle;
     $('autoSaveNote').hidden = !isIOS;
     $('autoSaveNote').textContent = 'iPhone does not let websites save to Photos by themselves. When files arrive, a “Save to Photos” button appears at the top — one tap saves them all. Received folders arrive as a .zip (Files app opens it).';
     const needs = auto && folderHandle && !folderOk;
     $('folderBanner').hidden = !needs;
-    if (needs) $('folderBannerText').textContent = `Allow QuickShare to keep saving received files to "${folderHandle.name}"`;
+    if (needs) $('folderBannerText').textContent = `Allow QuickShare to keep saving received files to "${folderHandle.name}" — choose “Allow on every visit” so it never asks again`;
   }
 
   // =====================================================================
@@ -2439,7 +2539,7 @@
     $('setName').value = settings.name; $('setTurnUrl').value = settings.turnUrl; $('setTurnUser').value = settings.turnUser;
     $('setTurnPass').value = settings.turnPass; $('setSignal').value = settings.signal; $('setNewCode').checked = false;
     $('setDiscover').checked = settings.discover !== false; $('setAutoSave').checked = settings.autoSave !== false; $('setKeepAwake').checked = settings.keepAwake !== false;
-    $('setHistory').checked = settings.history !== false;
+    $('setHistory').checked = settings.history !== false; $('setSkipDup').checked = settings.skipDup !== false;
     renderFolderUI(); $('settingsDlg').showModal();
   };
   $('forgetAllBtn').onclick = async () => {
@@ -2454,7 +2554,7 @@
     const nameChanged = $('setName').value.trim() !== settings.name;
     settings = { name: clean($('setName').value) || defaultName(), turnUrl: $('setTurnUrl').value.trim(), turnUser: $('setTurnUser').value.trim(),
                  turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked,
-                 autoSave: $('setAutoSave').checked, keepAwake: $('setKeepAwake').checked, history: $('setHistory').checked };
+                 autoSave: $('setAutoSave').checked, keepAwake: $('setKeepAwake').checked, history: $('setHistory').checked, skipDup: $('setSkipDup').checked };
     store.set('settings', settings);
     if (settings.history === false) { xhist = []; store.set('history', []); }
     const restart = $('setNewCode').checked || before !== JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);

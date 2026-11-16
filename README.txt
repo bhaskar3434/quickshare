@@ -1,4 +1,4 @@
-QuickShare 3.0 - send files, folders and text between iPhone, Android, Windows and Mac
+QuickShare 3.2 - send files, folders and text between iPhone, Android, Windows and Mac
 =====================================================================================
 
 App: https://bhaskar3434.github.io/quickshare/
@@ -26,6 +26,12 @@ RECEIVING
 - Android, Windows, Mac: saved automatically to Downloads. Chrome/Edge on a computer can save into a folder you choose
   (Settings). Folders arrive as a .zip in Downloads, or as real subfolders in your chosen folder.
 - iPhone: a banner "3 photos received" - one tap on "Save to Photos" saves them all (Apple requires the tap).
+- Same file sent again by mistake: the receiver already has it, so it is skipped automatically - no download, no
+  question. The sender sees "Already on <device> - skipped" with a "Send anyway" button. (Settings: "Skip files
+  this device already received".)
+- Same NAME but changed content: in a save folder you chose (Chrome/Edge on a computer) the old file is replaced -
+  the old one stays until the new one is completely received. In the Downloads folder a website can't overwrite
+  files, so the browser keeps both (e.g. "photo (1).jpg"); Android never shows "Download again?".
 - Text messages show with Copy and Open link buttons. "History" lists past transfers (kept only on that device).
 
 PRIVACY & SECURITY
