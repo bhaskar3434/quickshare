@@ -21,6 +21,13 @@ SENDING A FILE
 4. Tap "Choose files to send". Progress shows on both devices.
 5. On the receiving device tap Save (iPhone: goes to Files -> Downloads; use Share to put photos/videos into Photos).
 
+AUTOMATIC SAVING (Settings -> "Save received files automatically", on by default)
+- Android: received files go straight to Downloads (Gallery/Google Photos shows them under "Download").
+  Chrome may ask once to "allow multiple downloads" - tap Allow.
+- Windows / Mac: files go to Downloads. On Chrome or Edge you can pick your own folder in Settings.
+- iPhone / iPad: Apple does not let websites save to Photos without a tap. A banner appears at the top
+  ("3 photos received") - one tap on "Save to Photos" saves them all.
+
 GOOD TO KNOW
 - Nearby list: only devices that can reach each other directly over your local network are shown.
   Devices you marked "Always allow" reconnect automatically whenever both are open on the same Wi-Fi.

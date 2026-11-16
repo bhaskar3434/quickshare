@@ -84,6 +84,8 @@
     transition: all .25s; max-width: 90vw; text-align: center; z-index: 10; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .banner { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 5; border: 2px solid var(--blue);
+    box-shadow: 0 6px 24px rgba(0,0,0,.12); }
 </style>
 </head>
 <body>
@@ -95,6 +97,23 @@
       <button class="plain" id="settingsBtn" aria-label="Settings">⚙︎</button>
     </div>
   </header>
+
+  <section class="card banner" id="saveBanner" hidden>
+    <div id="saveBannerText" style="font-weight:600"></div>
+    <div class="small">iPhone needs one tap to save. All waiting files are saved together.</div>
+    <div class="row" style="margin-top:10px">
+      <button id="saveAllBtn">Save to Photos</button>
+      <button class="ghost" id="saveLaterBtn" style="flex:none">Later</button>
+    </div>
+  </section>
+
+  <section class="card banner" id="folderBanner" hidden>
+    <div id="folderBannerText" style="font-weight:600"></div>
+    <div class="small">Until you allow it, received files go to your Downloads folder.</div>
+    <div class="row" style="margin-top:10px">
+      <button id="regrantBtn">Allow</button>
+    </div>
+  </section>
 
   <section class="card">
     <h2>This device</h2>
@@ -162,6 +181,15 @@
       <label for="setSignal">Signaling server (leave empty for the free PeerJS cloud)</label>
       <input type="text" id="setSignal" placeholder="https://peer.example.com:443/myapp">
     </details>
+    <label class="check"><input type="checkbox" id="setAutoSave"> Save received files automatically</label>
+    <div id="folderRow" hidden style="margin:4px 0 6px 28px">
+      <div class="small" id="folderLabel"></div>
+      <div class="row" style="margin-top:6px">
+        <button type="button" class="ghost" id="pickFolderBtn">Choose a folder…</button>
+        <button type="button" class="plain" id="clearFolderBtn" style="flex:none">Use Downloads</button>
+      </div>
+    </div>
+    <p class="small" id="autoSaveNote" style="margin:4px 0 0 28px" hidden></p>
     <label class="check"><input type="checkbox" id="setDiscover"> Find devices on the same Wi-Fi automatically</label>
     <label class="check"><input type="checkbox" id="setNewCode"> Give this device a new code</label>
     <button class="danger" type="button" id="forgetTrusted" style="margin-top:6px">Forget all trusted devices</button>
@@ -228,7 +256,7 @@
   }
 
   // ---------- settings ----------
-  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true }, store.get('settings', {}));
+  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true }, store.get('settings', {}));
   let myCode = store.get('code', null) || newCode();
   store.set('code', myCode);
   let trusted = new Set(store.get('trusted', []));
@@ -552,6 +580,21 @@
     rx.ui.onCancel(() => { try { sendJSON(entry.conn, { t: 'cancel', id: rx.id }); } catch {} failRx(entry, 'Cancelled'); });
     busy(1);
     rx.ready = (async () => {
+      // Desktop Chrome/Edge with a chosen folder: stream straight into that folder.
+      if (settings.autoSave !== false && folderHandle && folderOk) {
+        try {
+          rx.savedName = await uniqueName(folderHandle, safeName(rx.name));
+          rx.handle = await folderHandle.getFileHandle(rx.savedName, { create: true });
+          rx.writer = await rx.handle.createWritable();
+          rx.inFolder = true;
+          return;
+        } catch (e) {
+          console.warn('folder save failed', e);
+          if (rx.handle) { try { await folderHandle.removeEntry(rx.savedName); } catch {} }
+          rx.handle = null; rx.writer = null; rx.inFolder = false;
+          folderOk = false; renderFolderUI();
+        }
+      }
       const dir = size > 32 * 1024 * 1024 ? await getOpfs() : null;
       if (dir) {
         try { rx.handle = await dir.getFileHandle(rx.id, { create: true }); rx.writer = await rx.handle.createWritable(); }
@@ -582,6 +625,7 @@
     const rx = entry.rx; if (!rx || rx.id !== id) return;
     entry.rx = null;
     await flushRx(rx);
+    await rx.ready; // empty files never trigger a flush, so make sure the save target is set up
     busy(-1);
     if (rx.failed) { rx.ui.finish('Could not save: ' + (rx.error && rx.error.message || 'storage error') + ' (device may be out of space)', false); return; }
     let file;
@@ -591,23 +635,151 @@
     } catch (e) { rx.ui.finish('Could not save: ' + e.message, false); return; }
     if (file.size !== rx.size) { rx.ui.finish(`Incomplete (${fmtBytes(file.size)} of ${fmtBytes(rx.size)})`, false); return; }
     try { sendJSON(entry.conn, { t: 'got', id }); } catch {}
-    const named = new File([file], rx.name, { type: rx.type || file.type || 'application/octet-stream' });
-    rx.ui.finish(`From ${entry.name} · ${fmtBytes(rx.size)} · received`, true);
-    addSaveButtons(rx.ui, named);
-    toast('Received ' + rx.name);
+    const named = new File([file], safeName(rx.name), { type: rx.type || file.type || 'application/octet-stream' });
+    const auto = settings.autoSave !== false;
+    let where = 'received', saved = false;
+    if (rx.inFolder) {
+      where = `saved to folder "${folderHandle.name}"` + (rx.savedName !== named.name ? ` as ${rx.savedName}` : ''); saved = true;
+    } else if (auto && !isIOS) {
+      autoDownload(named); where = 'saved to Downloads'; saved = true;
+    } else if (auto && isIOS) {
+      addPending(named); where = 'tap “Save” at the top to keep it';
+    }
+    rx.ui.finish(`From ${entry.name} · ${fmtBytes(rx.size)} · ${where}`, true);
+    addSaveButtons(rx.ui, named, saved, !!rx.inFolder);
+    toast((saved ? 'Saved ' : 'Received ') + named.name);
   }
+
+  // ---------- automatic saving ----------
+  const safeName = (n) => String(n).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').replace(/^[.\s]+/, '').trim().slice(0, 200) || 'file';
+  function autoDownload(file) {
+    // Chrome/Edge/Firefox/Safari on Android, Windows, Mac save this straight into Downloads.
+    // (Chrome may ask once to "allow multiple downloads" for this site.)
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file); a.download = file.name; a.style.display = 'none';
+    document.body.append(a); a.click(); a.remove();
+  }
+  async function uniqueName(dir, name) {
+    const dot = name.lastIndexOf('.');
+    const base = dot > 0 ? name.slice(0, dot) : name, ext = dot > 0 ? name.slice(dot) : '';
+    for (let i = 0; i < 500; i++) {
+      const n = i ? `${base} (${i})${ext}` : name;
+      try { await dir.getFileHandle(n); }
+      catch (e) { if (e.name === 'NotFoundError') return n; if (e.name !== 'TypeMismatchError') throw e; }
+    }
+    return Date.now() + '-' + name;
+  }
+
+  // iPhone/iPad: websites cannot write to Photos without a tap, so collect files and save them all with one tap.
+  const pendingSave = [];
+  let shareOneByOne = false;
+  function addPending(file) { pendingSave.push(file); renderSaveBanner(); }
+  function renderSaveBanner() {
+    const n = pendingSave.length;
+    $('saveBanner').hidden = n === 0;
+    if (!n) return;
+    const photos = pendingSave.filter(f => f.type.startsWith('image/')).length;
+    const videos = pendingSave.filter(f => f.type.startsWith('video/')).length;
+    const other = n - photos - videos;
+    const parts = [];
+    if (photos) parts.push(photos + (photos > 1 ? ' photos' : ' photo'));
+    if (videos) parts.push(videos + (videos > 1 ? ' videos' : ' video'));
+    if (other) parts.push(other + (other > 1 ? ' files' : ' file'));
+    $('saveBannerText').textContent = '📥 ' + parts.join(', ') + ' received';
+    $('saveAllBtn').textContent = other ? (n > 1 ? `Save all ${n}` : 'Save') : 'Save to Photos';
+  }
+  async function saveAllPending() {
+    if (!pendingSave.length) return;
+    let batch = shareOneByOne ? pendingSave.slice(0, 1) : pendingSave.slice();
+    if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: batch }))) {
+      if (batch.length > 1 && navigator.canShare && navigator.canShare({ files: batch.slice(0, 1) })) batch = batch.slice(0, 1);
+      else { toast('Use the Save button on each file below.'); return; }
+    }
+    try {
+      await navigator.share({ files: batch });
+      for (const f of batch) { const i = pendingSave.indexOf(f); if (i >= 0) pendingSave.splice(i, 1); }
+      renderSaveBanner();
+      if (pendingSave.length) toast(`${pendingSave.length} left — tap Save again`);
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+      if (!shareOneByOne && batch.length > 1) { shareOneByOne = true; toast('Too many at once — tap Save again to save them one by one.'); }
+      else toast('Could not open the save sheet. Use the Save button on each file below.');
+    }
+  }
+  $('saveAllBtn').onclick = saveAllPending;
+  $('saveLaterBtn').onclick = () => { $('saveBanner').hidden = true; };
+
+  // Desktop Chrome/Edge: optionally save straight into a folder the person chooses.
+  const canPickFolder = 'showDirectoryPicker' in window && !isIOS && !/Android/i.test(navigator.userAgent);
+  let folderHandle = null, folderOk = false;
+  function idb() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('quickshare', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+  }
+  async function idbGet(k) {
+    try { const db = await idb(); return await new Promise((res) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); }
+    catch { return undefined; }
+  }
+  async function idbSet(k, v) {
+    try { const db = await idb(); await new Promise((res) => { const t = db.transaction('kv', 'readwrite'); const s = t.objectStore('kv'); v === undefined ? s.delete(k) : s.put(v, k); t.oncomplete = res; t.onerror = res; }); }
+    catch {}
+  }
+  async function loadFolder() {
+    if (!canPickFolder) { renderFolderUI(); return; }
+    folderHandle = (await idbGet('folder')) || null;
+    if (folderHandle) { try { folderOk = (await folderHandle.queryPermission({ mode: 'readwrite' })) === 'granted'; } catch { folderOk = false; } }
+    renderFolderUI();
+  }
+  async function pickFolder() {
+    try {
+      const h = await window.showDirectoryPicker({ id: 'quickshare', mode: 'readwrite', startIn: 'downloads' });
+      folderHandle = h; folderOk = true; await idbSet('folder', h);
+      toast(`Received files will be saved to "${h.name}"`);
+    } catch (e) { if (e.name !== 'AbortError') toast('Could not use that folder.'); }
+    renderFolderUI();
+  }
+  async function regrantFolder() {
+    if (!folderHandle) return;
+    try { folderOk = (await folderHandle.requestPermission({ mode: 'readwrite' })) === 'granted'; } catch { folderOk = false; }
+    renderFolderUI();
+  }
+  function renderFolderUI() {
+    const auto = settings.autoSave !== false;
+    $('folderRow').hidden = !canPickFolder;
+    $('folderLabel').textContent = folderHandle
+      ? `Saving to folder: ${folderHandle.name}` + (folderOk ? '' : ' (needs your OK)')
+      : 'Saving to: your Downloads folder';
+    $('clearFolderBtn').hidden = !folderHandle;
+    $('autoSaveNote').hidden = !isIOS;
+    $('autoSaveNote').textContent = 'iPhone does not let websites save to Photos by themselves. When files arrive, a “Save to Photos” button appears at the top — one tap saves them all.';
+    const needs = auto && folderHandle && !folderOk;
+    $('folderBanner').hidden = !needs;
+    if (needs) $('folderBannerText').textContent = `Allow QuickShare to keep saving received files to "${folderHandle.name}"`;
+  }
+  $('pickFolderBtn').onclick = pickFolder;
+  $('clearFolderBtn').onclick = async () => { folderHandle = null; folderOk = false; await idbSet('folder', undefined); renderFolderUI(); toast('Received files will go to Downloads'); };
+  $('regrantBtn').onclick = regrantFolder;
   function failRx(entry, why) {
     const rx = entry.rx; if (!rx) return;
     entry.rx = null; rx.failed = true;
     rx.ui.finish(why, false); busy(-1);
-    rx.ready.then(async () => { try { if (rx.writer) await rx.writer.abort(); } catch {} try { if (rx.handle) await opfsDir.removeEntry(rx.id); } catch {} });
+    rx.ready.then(async () => {
+      try { if (rx.writer) await rx.writer.abort(); } catch {}
+      try { if (rx.handle) { if (rx.inFolder) await folderHandle.removeEntry(rx.savedName); else await opfsDir.removeEntry(rx.id); } } catch {}
+    });
   }
-  function addSaveButtons(ui, file) {
+  function addSaveButtons(ui, file, saved, inFolder) {
     const a = ui.actions();
     const url = URL.createObjectURL(file);
-    const save = document.createElement('a'); save.className = 'btn'; save.href = url; save.download = file.name; save.textContent = 'Save';
-    save.rel = 'noopener';
-    a.append(save);
+    if (!inFolder) {
+      const save = document.createElement('a'); save.className = saved ? 'btn ghost' : 'btn'; save.href = url; save.download = file.name;
+      save.textContent = saved ? 'Save again' : (isIOS ? 'Save to Files' : 'Save');
+      save.rel = 'noopener';
+      a.append(save);
+    }
     if (/^(image|video|audio)\/|^application\/pdf|^text\//.test(file.type)) {
       const open = document.createElement('a'); open.className = 'btn ghost'; open.href = url; open.target = '_blank'; open.textContent = 'Open'; open.rel = 'noopener';
       a.append(open);
@@ -617,8 +789,6 @@
       sh.onclick = async () => { try { await navigator.share({ files: [file], title: file.name }); } catch (e) { if (e.name !== 'AbortError') toast('Sharing not available: use Save.'); } };
       a.append(sh);
     }
-    if (isIOS) { const h = document.createElement('div'); h.className = 'hint'; h.style.flexBasis = '100%';
-      h.textContent = 'Save puts it in Files → Downloads. Use Share to save photos/videos to Photos.'; ui.el.append(h); }
   }
 
 
@@ -825,6 +995,7 @@
   $('settingsBtn').onclick = () => {
     $('setName').value = settings.name; $('setTurnUrl').value = settings.turnUrl; $('setTurnUser').value = settings.turnUser;
     $('setTurnPass').value = settings.turnPass; $('setSignal').value = settings.signal; $('setNewCode').checked = false; $('setDiscover').checked = settings.discover !== false;
+    $('setAutoSave').checked = settings.autoSave !== false; renderFolderUI();
     $('settingsDlg').showModal();
   };
   $('forgetTrusted').onclick = () => { trusted = new Set(); store.set('trusted', []); toast('Trusted devices cleared'); };
@@ -832,7 +1003,8 @@
     if ($('settingsDlg').returnValue !== 'save') return;
     const before = JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
     settings = { name: $('setName').value.trim() || defaultName(), turnUrl: $('setTurnUrl').value.trim(), turnUser: $('setTurnUser').value.trim(),
-                 turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked };
+                 turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked, autoSave: $('setAutoSave').checked };
+    renderFolderUI();
     store.set('settings', settings);
     const restart = $('setNewCode').checked || before !== JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
     if ($('setNewCode').checked) { myCode = newCode(); store.set('code', myCode); }
@@ -850,7 +1022,9 @@
   cleanOpfs();
   startPeer();
   startNearby(true);
-  window.__qs = { conns, nearby, get code() { return myCode; }, connectTo, sendFiles }; // for testing
+  loadFolder();
+  window.__qs = { conns, nearby, get code() { return myCode; }, connectTo, sendFiles,
+                  setFolder(h) { folderHandle = h; folderOk = true; renderFolderUI(); } }; // for testing // for testing
 })();
 </script>
 </body>
