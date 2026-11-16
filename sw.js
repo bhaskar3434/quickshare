@@ -1,5 +1,5 @@
 // QuickShare service worker.
-// Its only job: receive files shared into QuickShare from the Android share sheet ("Share → QuickShare"),
+// Its only job: receive files, text and links shared into QuickShare from the Android share sheet ("Share → QuickShare"),
 // keep them for the page, and open the app. It does not cache anything, so the app is always the latest version.
 const DB = 'quickshare';
 
@@ -30,7 +30,8 @@ self.addEventListener('fetch', (event) => {
     try {
       const form = await event.request.formData();
       const files = form.getAll('files').filter((f) => f && typeof f === 'object' && 'size' in f);
-      await put('shared', { files, at: Date.now() });
+      const str = (k) => { const v = form.get(k); return typeof v === 'string' ? v.slice(0, 100000) : ''; };
+      await put('shared', { files, title: str('title'), text: str('text'), url: str('url'), at: Date.now() });
     } catch (e) {
       // fall through to opening the app; it will say nothing was shared
     }

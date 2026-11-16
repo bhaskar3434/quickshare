@@ -14,63 +14,78 @@
 <link rel="icon" href="icon-192.png">
 <style>
   :root {
-    --bg: #f4f6fb; --card: #fff; --text: #111827; --muted: #6b7280; --line: #e5e7eb;
-    --blue: #2563eb; --blue-soft: #e8efff; --green: #059669; --green-soft: #e7f7ef; --red: #dc2626; --red-soft: #fdecec;
-    --amber: #b45309; --amber-soft: #fdf3e2;
+    --bg: #f3f5fa; --card: #fff; --text: #0f172a; --muted: #64748b; --line: #e2e8f0; --soft: #f1f5f9;
+    --blue: #2563eb; --blue-soft: #e8efff; --green: #059669; --green-soft: #e3f6ee; --red: #dc2626; --red-soft: #fdecec;
+    --amber: #b45309; --amber-soft: #fdf3e2; --shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 16px rgba(15,23,42,.05);
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0b1020; --card: #151b2e; --text: #f3f4f6; --muted: #9ca3af; --line: #26304a;
-            --blue: #4f86ff; --blue-soft: #1c2a4d; --green: #34d399; --green-soft: #12302a; --red: #f87171; --red-soft: #3a1c22;
-            --amber: #fbbf24; --amber-soft: #3a2f14; }
+    :root { --bg: #0b1020; --card: #141a2c; --text: #f1f5f9; --muted: #94a3b8; --line: #25304a; --soft: #1b2338;
+            --blue: #5b8cff; --blue-soft: #1c2a4d; --green: #34d399; --green-soft: #12302a; --red: #f87171; --red-soft: #3a1c22;
+            --amber: #fbbf24; --amber-soft: #3a2f14; --shadow: none; }
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  [hidden] { display: none !important; }
   html, body { margin: 0; background: var(--bg); color: var(--text);
     font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  body { padding: calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 14px)
+  body { padding: calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px)
                   calc(env(safe-area-inset-bottom) + 24px) calc(env(safe-area-inset-left) + 14px); }
-  main { max-width: 560px; margin: 0 auto; }
-  header { display: flex; align-items: center; justify-content: space-between; margin: 4px 2px 14px; gap: 8px; }
-  h1 { font-size: 24px; margin: 0; letter-spacing: -0.3px; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0; font-weight: 600; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
-  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; min-height: 24px; }
-  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex: none; }
+  main { max-width: 580px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; margin: 4px 2px 12px; gap: 8px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+  h1 img { width: 28px; height: 28px; border-radius: 8px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0; font-weight: 700; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; min-height: 28px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); background: var(--card);
+    border: 1px solid var(--line); padding: 5px 10px; border-radius: 999px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex: none; display: inline-block; }
   .dot.on { background: var(--green); } .dot.off { background: var(--red); }
-  .me { display: flex; gap: 16px; align-items: center; }
-  .qr { width: 132px; height: 132px; flex: none; background: #fff; border-radius: 12px; padding: 6px; }
-  .qr svg { width: 100%; height: 100%; display: block; }
-  .code { font: 700 34px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 4px; margin: 2px 0 6px; }
   .small { font-size: 13px; color: var(--muted); }
+  .sub { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 14px 2px 8px; }
   button, .btn { appearance: none; border: 0; border-radius: 12px; padding: 12px 16px; font-family: inherit; font-weight: 600; font-size: 15px;
-    line-height: 1; background: var(--blue); color: #fff; cursor: pointer; text-decoration: none; display: inline-flex;
+    line-height: 1.1; background: var(--blue); color: #fff; cursor: pointer; text-decoration: none; display: inline-flex;
     align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
   button.ghost, .btn.ghost { background: var(--blue-soft); color: var(--blue); }
   button.plain { background: transparent; color: var(--blue); padding: 8px; min-height: 36px; }
   button.danger { background: transparent; color: var(--red); padding: 8px 10px; min-height: 36px; }
-  button.icon { background: transparent; color: var(--blue); padding: 6px 8px; min-height: 36px; font-size: 18px; }
+  button.icon { background: transparent; color: var(--text); padding: 6px 8px; min-height: 36px; font-size: 18px; }
   button.mini, .btn.mini { min-height: 34px; padding: 8px 12px; font-size: 14px; flex: none; }
   button:disabled { opacity: .45; cursor: default; }
   .row { display: flex; gap: 8px; }
   .row > * { flex: 1; }
-  input[type=text], input[type=password] { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  input[type=text], input[type=password], textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
     background: var(--bg); color: var(--text); font-family: inherit; font-size: 16px; min-height: 44px; }
+  textarea { resize: vertical; min-height: 120px; }
   #peerCode { text-transform: uppercase; letter-spacing: 3px; font-family: ui-monospace, Menlo, monospace; font-weight: 700; }
   .devices { display: flex; flex-direction: column; gap: 8px; }
-  .device { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--bg); }
-  .device input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--blue); flex: none; }
+  .device { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--soft); }
+  .device .av { width: 38px; height: 38px; border-radius: 12px; background: var(--card); display: grid; place-items: center; font-size: 20px; flex: none; position: relative; }
+  .device .av .dot { position: absolute; right: -2px; bottom: -2px; width: 11px; height: 11px; border: 2px solid var(--soft); }
   .device .name { flex: 1; min-width: 0; }
   .device .name b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .device .name .small { display: flex; align-items: center; gap: 4px 6px; flex-wrap: wrap; }
-  .card-head button { white-space: nowrap; }
-  .device .name .small .dot { display: inline-block; vertical-align: middle; margin: -2px 6px 0 0; }
+  .device.warnrow { background: var(--amber-soft); }
   .empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
-  .drop { border: 2px dashed var(--line); border-radius: 14px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 10px; }
+  .welcome { text-align: center; padding: 8px 4px 4px; }
+  .welcome p { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip { min-height: 32px; padding: 6px 12px; border-radius: 999px; font-size: 14px; background: var(--soft); color: var(--text); border: 1px solid var(--line); font-weight: 600; }
+  .chip.on { background: var(--blue-soft); color: var(--blue); border-color: var(--blue); }
+  .chip .dot { width: 7px; height: 7px; }
+  .sendrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .sendrow.two { grid-template-columns: repeat(2, 1fr); }
+  .sendrow button { flex-direction: column; min-height: 68px; gap: 4px; font-size: 14px; }
+  .sendrow button .e { font-size: 22px; line-height: 1; }
+  .drop { border: 2px dashed var(--line); border-radius: 14px; padding: 14px; text-align: center; color: var(--muted); margin-top: 10px; font-size: 14px; }
   @media (hover: none) { .drop { display: none; } }
-  .drop.over { border-color: var(--blue); color: var(--blue); }
+  .drop.over { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+  .tabs { display: inline-flex; background: var(--soft); border-radius: 10px; padding: 3px; gap: 2px; }
+  .tab { min-height: 30px; padding: 6px 12px; font-size: 13px; background: transparent; color: var(--muted); border-radius: 8px; }
+  .tab.on { background: var(--card); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
   .xfer { padding: 12px 0; border-top: 1px solid var(--line); }
   .xfer:first-child { border-top: 0; padding-top: 2px; }
   .xfer .top { display: flex; align-items: center; gap: 8px; }
+  .xfer .dir { width: 22px; text-align: center; flex: none; }
   .xfer .fname { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
   .bar > i { display: block; height: 100%; width: 0; background: var(--blue); transition: width .2s; }
@@ -78,26 +93,44 @@
   .xfer.done .bar > i { background: var(--green); }
   .xfer.fail .bar > i { background: var(--red); }
   .xfer.paused .info { color: var(--amber); }
+  .xfer.textmsg .bar { display: none; }
   .xfer .actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-  .xfer .actions > * { flex: 1; }
-  dialog { border: 0; border-radius: 18px; padding: 0; width: min(92vw, 460px); max-height: 88vh; background: var(--card); color: var(--text); }
+  .xfer .actions > * { flex: 1; min-height: 38px; padding: 8px 12px; font-size: 14px; }
+  .msg { white-space: pre-wrap; word-break: break-word; background: var(--soft); border-radius: 12px; padding: 10px 12px; margin-top: 8px; font-size: 15px; max-height: 240px; overflow: auto; }
+  .msg a { color: var(--blue); }
+  .hist { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); align-items: flex-start; }
+  .hist:first-child { border-top: 0; }
+  .hist .ic { width: 22px; flex: none; text-align: center; }
+  .hist .b { flex: 1; min-width: 0; }
+  .hist .b b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .hist .b .prev { white-space: pre-wrap; word-break: break-word; font-size: 14px; max-height: 3.6em; overflow: hidden; }
+  dialog { border: 0; border-radius: 20px; padding: 0; width: min(92vw, 460px); max-height: 90vh; background: var(--card); color: var(--text); }
   dialog::backdrop { background: rgba(0,0,0,.45); }
   dialog .inner { padding: 18px; }
-  dialog h3 { margin: 0 0 8px; font-size: 18px; }
+  dialog h3 { margin: 0 0 8px; font-size: 19px; }
   dialog label.f { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
   details { margin-top: 14px; } summary { cursor: pointer; color: var(--blue); font-weight: 600; }
   .check { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: 14px; }
   .check input { width: 20px; height: 20px; accent-color: var(--blue); flex: none; }
   .note { margin: 0 0 4px 28px; }
+  .me { display: flex; gap: 16px; align-items: center; background: var(--soft); border-radius: 14px; padding: 12px; }
+  .qr { width: 136px; height: 136px; flex: none; background: #fff; border-radius: 12px; padding: 7px; }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .code { font: 700 28px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 3px; margin: 6px 0; }
+  .sas { font: 800 34px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 4px; text-align: center; padding: 14px; margin: 12px 0 4px;
+    background: var(--blue-soft); color: var(--blue); border-radius: 14px; }
+  .scanbox { position: relative; border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 1 / 1; margin: 6px 0 10px; }
+  .scanbox video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .scanbox .frame { position: absolute; inset: 18%; border: 3px solid rgba(255,255,255,.9); border-radius: 18px; box-shadow: 0 0 0 999px rgba(0,0,0,.25); }
   #toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 20px); transform: translateX(-50%) translateY(20px);
-    background: #111827; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; pointer-events: none;
+    background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; pointer-events: none;
     transition: all .25s; max-width: 90vw; text-align: center; z-index: 10; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
-  .awake { margin: -6px 2px 12px; }
+  .awake { margin: -4px 4px 10px; }
   .awake.warn { color: var(--amber); font-weight: 600; }
-  .banner { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 5; border: 2px solid var(--blue);
-    box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+  .banner { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 5; border: 2px solid var(--blue); box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+  .banner.amber { border-color: var(--amber); }
   .badge { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: var(--blue-soft); color: var(--blue); white-space: nowrap; }
   .badge.ok { background: var(--green-soft); color: var(--green); }
   .badge.warn { background: var(--amber-soft); color: var(--amber); }
@@ -108,13 +141,16 @@
   .chk .fix { font-size: 13px; color: var(--amber); margin-top: 3px; }
   .pick { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
   .pick button { justify-content: space-between; }
-  footer { text-align: center; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+  .or { text-align: center; font-size: 12px; color: var(--muted); margin: 4px 0; }
+  footer { text-align: center; line-height: 1.6; }
+  .lock { color: var(--green); font-weight: 600; }
 </style>
 </head>
 <body>
 <main>
   <header>
-    <h1>QuickShare</h1>
+    <h1><img src="icon-192.png" alt="">QuickShare</h1>
     <div class="row" style="flex:none;align-items:center;gap:2px">
       <span class="status"><span class="dot" id="netDot"></span><span id="netText">Starting…</span></span>
       <button class="icon" id="helpBtn" aria-label="Check connection and get help" title="Check &amp; help">🩺</button>
@@ -122,7 +158,14 @@
     </div>
   </header>
   <div class="small awake" id="awakeNote" hidden></div>
-
+  <section class="card banner amber" id="safariBanner" hidden>
+    <div style="font-weight:700">You opened this in Safari</div>
+    <div class="small" style="margin-top:4px">If you use QuickShare from your <b>Home Screen</b>, pair there instead — Safari and the Home Screen app keep separate device lists. Open QuickShare from the Home Screen, tap <b>＋ Add</b> → <b>Scan QR code</b>.</div>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" id="safariHereBtn">Pair here in Safari</button>
+      <button id="safariOkBtn">OK, I'll use the app</button>
+    </div>
+  </section>
   <section class="card banner" id="saveBanner" hidden>
     <div id="saveBannerText" style="font-weight:600"></div>
     <div class="small">iPhone needs one tap to save. All waiting files are saved together.</div>
@@ -131,7 +174,6 @@
       <button class="ghost" id="saveLaterBtn" style="flex:none">Later</button>
     </div>
   </section>
-
   <section class="card banner" id="folderBanner" hidden>
     <div id="folderBannerText" style="font-weight:600"></div>
     <div class="small">Until you allow it, received files go to your Downloads folder.</div>
@@ -139,61 +181,115 @@
   </section>
 
   <section class="card">
-    <div class="card-head"><h2>This device</h2></div>
-    <div class="me">
-      <div class="qr" id="qr" aria-label="QR code to connect to this device"></div>
-      <div style="min-width:0">
-        <div class="small" id="myName">—</div>
-        <div class="code" id="myCode">······</div>
-        <div class="small">Scan the QR with another phone's camera, or enter this code on the other device.</div>
-        <div class="row" style="margin-top:10px"><button class="ghost" id="inviteBtn">Share invite link</button></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <div class="card-head"><h2>My devices</h2><span class="small" id="devCount"></span></div>
+    <div class="card-head"><h2>My devices</h2><button class="plain" id="addBtn">＋ Add device</button></div>
     <div class="devices" id="devices"></div>
+    <div id="nearbyBox" hidden>
+      <div class="sub">📶 Found on this Wi-Fi</div>
+      <div class="devices" id="nearby"></div>
+    </div>
+    <div class="hint" id="nearbyNote"></div>
   </section>
 
-  <section class="card" id="nearbyCard">
-    <div class="card-head"><h2>Nearby on this Wi-Fi</h2></div>
-    <div class="devices" id="nearby"></div>
-  </section>
-
-  <section class="card">
-    <div class="card-head"><h2>Send files</h2></div>
-    <div class="drop" id="drop">Drop files here, or</div>
+  <section class="card" id="sendCard">
+    <div class="card-head"><h2>Send</h2><span class="small" id="sendTo"></span></div>
+    <div class="chips" id="chips"></div>
+    <div class="sendrow" id="sendRow">
+      <button id="sendFilesBtn"><span class="e">📄</span>Files &amp; photos</button>
+      <button class="ghost" id="sendFolderBtn"><span class="e">📁</span>Folder</button>
+      <button class="ghost" id="sendTextBtn"><span class="e">💬</span>Text / link</button>
+    </div>
+    <div class="drop" id="drop">…or drop files and folders here</div>
+    <div class="hint" id="sendHint"></div>
     <input type="file" id="fileInput" multiple hidden>
-    <button id="pickBtn" style="width:100%" disabled>Choose files to send</button>
-    <div class="hint" id="sendHint">Connect a device first.</div>
+    <input type="file" id="folderInput" webkitdirectory multiple hidden>
   </section>
 
   <section class="card">
     <div class="card-head">
-      <h2>Transfers</h2>
+      <div class="tabs" role="tablist">
+        <button class="tab on" id="tabNow" role="tab">Now</button>
+        <button class="tab" id="tabHist" role="tab">History</button>
+      </div>
       <div class="row" style="flex:none;gap:2px">
         <button class="danger" id="cancelAllBtn" hidden>Cancel all</button>
         <button class="plain" id="clearBtn" hidden>Clear finished</button>
+        <button class="plain" id="clearHistBtn" hidden>Clear history</button>
       </div>
     </div>
-    <div id="xfers"><div class="empty">Nothing yet.</div></div>
-  </section>
-
-  <section class="card">
-    <div class="card-head"><h2>Connect with a code</h2></div>
-    <form id="connectForm" class="row">
-      <input type="text" id="peerCode" placeholder="Enter code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false">
-      <button type="submit" style="flex:none">Connect</button>
-    </form>
+    <div id="xfers"><div class="empty">Nothing yet. Sent and received files and messages show here.</div></div>
+    <div id="hist" hidden></div>
   </section>
 
   <footer class="small">
-    Files go directly between your devices, encrypted, and are never uploaded to any server.<br>
-    Stay in QuickShare while a transfer runs — if it's interrupted, it continues by itself when the devices reconnect.<br>
-    <span id="version"></span> · <button class="plain" id="helpBtn2" style="font-size:13px;min-height:0;padding:4px">Having trouble? Run a check</button>
+    <span class="lock">🔒 End-to-end encrypted</span> · files go straight between your paired devices and are never uploaded.<br>
+    This device: <b id="footName"></b> · <span id="version"></span> ·
+    <button class="plain" id="helpBtn2" style="font-size:13px;min-height:0;padding:2px 4px">Having trouble? Run a check</button>
   </footer>
 </main>
+
+<dialog id="addDlg">
+  <div class="inner">
+    <h3>Add a device</h3>
+    <div class="small">Pairing is needed once. After that, your devices find each other by themselves — at home, at work, anywhere.</div>
+    <div id="addNearbyBox" hidden>
+      <div class="sub">📶 Found on this Wi-Fi</div>
+      <div class="devices" id="addNearby"></div>
+    </div>
+    <div class="sub">Option 1 — scan</div>
+    <button id="scanBtn" style="width:100%">📷 Scan the other device's QR code</button>
+    <div class="sub">Option 2 — let the other device scan this</div>
+    <div class="me">
+      <div class="qr" id="qr" aria-label="QR code to pair with this device"></div>
+      <div style="min-width:0">
+        <div class="small">In QuickShare on the other device: <b>＋ Add device</b> → <b>Scan</b>.</div>
+        <div class="code" id="myCode">······</div>
+        <div class="small" id="myName">—</div>
+      </div>
+    </div>
+    <div class="sub">Option 3 — type its code</div>
+    <form id="connectForm" class="row">
+      <input type="text" id="peerCode" placeholder="6-letter code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" style="flex:none">Pair</button>
+    </form>
+    <div class="row" style="margin-top:14px">
+      <button class="ghost" id="inviteBtn">Share invite link</button>
+      <button id="addClose">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="scanDlg">
+  <div class="inner">
+    <h3>Scan QR code</h3>
+    <div class="scanbox"><video id="scanVideo" playsinline muted autoplay></video><div class="frame"></div></div>
+    <div class="small" id="scanText">Point the camera at the QR code shown in QuickShare on the other device.</div>
+    <button class="ghost" id="scanCancel" style="width:100%;margin-top:12px">Cancel</button>
+  </div>
+</dialog>
+
+<dialog id="textDlg">
+  <form class="inner" id="textForm">
+    <h3>Send text or a link</h3>
+    <div class="small" id="textTo" style="margin-bottom:8px"></div>
+    <textarea id="textInput" maxlength="100000" placeholder="Type or paste a message, link, address, OTP…"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button type="button" class="ghost" id="pasteBtn">📋 Paste clipboard</button>
+      <button type="submit" id="textSend">Send</button>
+    </div>
+    <button type="button" class="plain" id="textCancel" style="width:100%;margin-top:6px">Cancel</button>
+  </form>
+</dialog>
+
+<dialog id="pairDlg">
+  <div class="inner">
+    <h3 id="pairTitle">Pairing…</h3>
+    <p id="pairText" style="margin:0"></p>
+    <div class="sas" id="pairSas"></div>
+    <div class="small" id="pairNote"></div>
+    <button id="pairYes" style="width:100%;margin-top:14px" hidden>✓ Numbers match</button>
+    <button class="ghost" id="pairCancel" style="width:100%;margin-top:8px">Cancel</button>
+  </div>
+</dialog>
 
 <dialog id="settingsDlg">
   <form method="dialog" class="inner" id="settingsForm">
@@ -212,9 +308,10 @@
     <label class="check"><input type="checkbox" id="setKeepAwake"> Keep the screen on while QuickShare is open</label>
     <p class="small note">Phones pause websites when the screen locks, which pauses transfers. The screen is always kept on during a transfer.</p>
     <label class="check"><input type="checkbox" id="setDiscover"> Find devices on the same Wi-Fi automatically</label>
+    <label class="check"><input type="checkbox" id="setHistory"> Keep a transfer history on this device</label>
     <details>
-      <summary>Advanced: relay for tricky networks</summary>
-      <p class="small">If two devices on different networks (for example, both on mobile data) can't connect, add a TURN relay. Get credentials from a TURN provider and paste them here on <b>both</b> devices. The 🩺 check tells you if you need this.</p>
+      <summary>Advanced</summary>
+      <p class="small">If two devices on different networks (for example, both on mobile data) can't connect, add a TURN relay on <b>both</b> devices. Relayed files stay end-to-end encrypted — the relay can't read them. The 🩺 check tells you if you need this.</p>
       <label class="f" for="setTurnUrl">TURN URL(s), comma separated</label>
       <input type="text" id="setTurnUrl" placeholder="turn:relay.example.com:443?transport=tcp">
       <label class="f" for="setTurnUser">TURN username</label>
@@ -223,9 +320,9 @@
       <input type="password" id="setTurnPass" autocomplete="off">
       <label class="f" for="setSignal">Signaling server (leave empty for the free PeerJS cloud)</label>
       <input type="text" id="setSignal" placeholder="https://peer.example.com:443/myapp">
+      <label class="check"><input type="checkbox" id="setNewCode"> Give this device a new code</label>
     </details>
-    <label class="check"><input type="checkbox" id="setNewCode"> Give this device a new code</label>
-    <button class="danger" type="button" id="forgetAllBtn" style="margin-top:6px">Forget all my devices</button>
+    <button class="danger" type="button" id="forgetAllBtn" style="margin-top:10px">Remove all paired devices</button>
     <div class="row" style="margin-top:16px">
       <button class="ghost" value="cancel" type="submit">Cancel</button>
       <button value="save" type="submit" id="saveSettings">Save</button>
@@ -237,6 +334,8 @@
   <div class="inner">
     <h3 id="askTitle"></h3>
     <p id="askText" style="margin:0"></p>
+    <div class="sas" id="askSas" hidden></div>
+    <div class="small" id="askNote" hidden></div>
     <label class="check" id="askCheckRow"><input type="checkbox" id="askCheck"> <span id="askCheckText"></span></label>
     <div class="row" style="margin-top:16px">
       <button class="ghost" id="askNo">Cancel</button>
@@ -263,23 +362,20 @@
       <button class="ghost" id="rerunBtn">Check again</button>
       <button class="ghost" id="copyReportBtn">Copy report</button>
     </div>
-    <div class="small" style="margin-top:8px">Still stuck? Tap <b>Copy report</b> and paste it to whoever is helping you — it contains no files or personal data.</div>
+    <div class="small" style="margin-top:8px">Still stuck? Tap <b>Copy report</b> and paste it to whoever is helping you — it contains no files, messages or personal data.</div>
     <button style="width:100%;margin-top:12px" id="helpClose">Close</button>
   </div>
 </dialog>
-
 <div id="toast" role="status"></div>
-
 <script src="lib/peerjs.min.js"></script>
 <script src="lib/qrcode.js"></script>
 <script>
 (() => {
   'use strict';
-
   // =====================================================================
   //  Constants & helpers
   // =====================================================================
-  const APP_VERSION = '2.0';
+  const APP_VERSION = '3.0';
   const PREFIX = 'qshare-v1-';
   const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const CHUNK = 64 * 1024;             // bytes per message (safe on Safari)
@@ -288,9 +384,11 @@
   const LOW_WATER = 1 * 1024 * 1024;
   const WRITE_BATCH = 4 * 1024 * 1024;
   const MEMORY_WARN = 1024 * 1024 * 1024;
-  const ALLOW_HOURS = 24;              // an approved device reconnects without asking for this long
   const PING_EVERY = 5000, DEAD_AFTER = 25000;
   const PARTIAL_KEEP_MS = 30 * 60 * 1000; // keep half-received files this long, waiting to resume
+  const QR_TOKEN_MS = 15 * 60 * 1000, LINK_TOKEN_MS = 24 * 3600 * 1000;
+  const MAX_TEXT = 100000;
+  const JUNK = /^(\.DS_Store|Thumbs\.db|desktop\.ini|\._.*)$/i;
 
   const $ = (id) => document.getElementById(id);
   const store = {
@@ -301,41 +399,111 @@
   const newCode = () => { let s = ''; const a = new Uint32Array(6); crypto.getRandomValues(a); for (const n of a) s += ALPHABET[n % ALPHABET.length]; return s; };
   const fmtBytes = (n) => { if (n < 1024) return n + ' B'; const u = ['KB', 'MB', 'GB', 'TB']; let i = -1; do { n /= 1024; i++; } while (n >= 1024 && i < u.length - 1); return n.toFixed(n < 10 ? 1 : 0) + ' ' + u[i]; };
   const fmtTime = (s) => { if (!isFinite(s) || s < 0) return ''; s = Math.round(s); if (s < 60) return s + 's'; const m = Math.floor(s / 60); return m < 60 ? m + 'm ' + (s % 60) + 's' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'; };
+  const fmtWhen = (t) => { const d = new Date(t), now = new Date(); const hm = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (d.toDateString() === now.toDateString()) return 'today ' + hm;
+    const y = new Date(now); y.setDate(now.getDate() - 1); if (d.toDateString() === y.toDateString()) return 'yesterday ' + hm;
+    return d.toLocaleDateString([], { day: 'numeric', month: 'short' }) + ' ' + hm; };
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
   const clean = (s, n = 40) => String(s || '').replace(/[\x00-\x1f]/g, '').trim().slice(0, n);
   const validCode = (c) => /^[A-Z0-9]{6}$/.test(c);
   let toastTimer;
-  const toast = (msg) => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); };
+  const toast = (msg) => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); };
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isAndroid = /Android/i.test(navigator.userAgent);
+  const isMac = !isIOS && /Mac/.test(navigator.platform || navigator.userAgent);
+  const isStandalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  const browserName = () => { const ua = navigator.userAgent; return /Edg\//.test(ua) ? 'Edge' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : 'browser'; };
+  const myPlatform = isIOS ? (/iPad/.test(navigator.userAgent) || navigator.maxTouchPoints > 1 && !/iPhone/.test(navigator.userAgent) ? 'ipad' : 'iphone') : isAndroid ? 'android' : isMac ? 'mac' : /Win/.test(navigator.platform || navigator.userAgent) ? 'windows' : 'pc';
+  const ICONS = { iphone: '📱', ipad: '📱', android: '🤖', mac: '💻', windows: '🖥️', pc: '🖥️' };
 
-  // Event log: kept in memory, included in the troubleshooting report.
+  // Event log: kept in memory, included in the troubleshooting report (never contains file contents or messages).
   const events = [];
   function log(msg) {
     const t = new Date();
     events.push(t.toTimeString().slice(0, 8) + ' ' + msg);
-    if (events.length > 200) events.shift();
+    if (events.length > 250) events.shift();
     console.info('[QuickShare]', msg);
   }
 
   function defaultName() {
-    const ua = navigator.userAgent;
-    if (/iPhone/.test(ua)) return 'iPhone';
-    if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'iPad';
-    if (/Android/.test(ua)) return 'Android';
-    if (/Windows/.test(ua)) return 'Windows PC';
-    if (/Mac/.test(ua)) return 'Mac';
-    if (/Linux/.test(ua)) return 'Linux PC';
-    return 'My device';
+    return { iphone: 'iPhone', ipad: 'iPad', android: 'Android', mac: 'Mac', windows: 'Windows PC', pc: 'Computer' }[myPlatform] || 'My device';
   }
+
+  // =====================================================================
+  //  Small IndexedDB key-value store (keys, chosen folder, shared files)
+  // =====================================================================
+  function idb() {
+    return new Promise((res, rej) => { const r = indexedDB.open('quickshare', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  }
+  async function idbGet(k) { try { const db = await idb(); return await new Promise((res) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); } catch { return undefined; } }
+  async function idbSet(k, v) { try { const db = await idb(); return await new Promise((res) => { const t = db.transaction('kv', 'readwrite'); const s = t.objectStore('kv'); v === undefined ? s.delete(k) : s.put(v, k); t.oncomplete = () => res(true); t.onerror = () => res(false); }); } catch { return false; } }
 
   // =====================================================================
   //  Settings & identity
   // =====================================================================
-  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true, keepAwake: true },
+  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true, keepAwake: true, history: true },
                                store.get('settings', {}));
   let myCode = store.get('code', null) || newCode();
   store.set('code', myCode);
+
+  // ---- Security: every device has its own key pair. The private key can't be exported, even by this app. ----
+  // Paired devices remember each other's public key. Every connection proves it with a signature over a fresh
+  // random number and the encryption fingerprints of that exact connection, so nobody can pretend to be one of
+  // your devices (not even someone who knows its code, and not the connection service in the middle).
+  const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const unb64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const b64url = (buf) => b64(buf).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const unb64url = (s) => unb64(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4));
+  const randB64 = (n) => b64url(crypto.getRandomValues(new Uint8Array(n)));
+  const enc = new TextEncoder();
+  async function sha256(text) { return new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(text))); }
+  let myKeys = null, myPub = '', keysStored = false;
+  async function loadIdentity() {
+    let saved = await idbGet('identity');
+    if (saved && saved.priv && saved.pub && saved.code === myCode) {
+      myKeys = { privateKey: saved.priv, publicKey: saved.pub }; myPub = saved.pubB64; keysStored = true; return;
+    }
+    myKeys = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify']);
+    myPub = b64(await crypto.subtle.exportKey('spki', myKeys.publicKey));
+    keysStored = await idbSet('identity', { priv: myKeys.privateKey, pub: myKeys.publicKey, pubB64: myPub, code: myCode, at: Date.now() });
+    if (keysStored) { const chk = await idbGet('identity'); keysStored = !!(chk && chk.pubB64 === myPub); }
+    log(keysStored ? 'Created this device’s security key' : 'Security key could not be stored (private browsing?) — pairings will not be remembered');
+  }
+  const keyCache = new Map();
+  async function importPub(s) {
+    if (keyCache.has(s)) return keyCache.get(s);
+    const k = await crypto.subtle.importKey('spki', unb64(s), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+    keyCache.set(s, k); return k;
+  }
+  async function signText(text) { return b64(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, myKeys.privateKey, enc.encode(text))); }
+  async function verifyText(key, sig, text) { try { return await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, unb64(sig), enc.encode(text)); } catch { return false; } }
+  async function hmac(keyBytes, text) {
+    const k = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    return b64(await crypto.subtle.sign('HMAC', k, enc.encode(text)));
+  }
+  const fpOf = (sdp) => { const m = /a=fingerprint:(\S+) ([0-9A-Fa-f:]+)/.exec(sdp || ''); return m ? m[1].toLowerCase() + ' ' + m[2].toUpperCase() : ''; };
+  function fingerprints(conn) {
+    const pc = conn && conn.peerConnection; if (!pc || !pc.localDescription || !pc.remoteDescription) return null;
+    const local = fpOf(pc.localDescription.sdp), remote = fpOf(pc.remoteDescription.sdp);
+    return local && remote ? { local, remote } : null;
+  }
+  async function matchNumber(fps, pubA, pubB) {
+    const h = await sha256('qs3-sas|' + [fps.local, fps.remote].sort().join('|') + '|' + [pubA, pubB].sort().join('|'));
+    const n = ((h[0] << 24 >>> 0) + (h[1] << 16) + (h[2] << 8) + h[3]) % 1000000;
+    const s = String(n).padStart(6, '0'); return s.slice(0, 3) + ' ' + s.slice(3);
+  }
+
+  // ---- One-time pairing tokens: the QR code / invite link carries a secret that proves "this person saw my screen". ----
+  let tokens = store.get('tokens', []).filter(t => t && t.exp > Date.now());
+  const saveTokens = () => store.set('tokens', tokens.filter(t => t.exp > Date.now()));
+  function makeToken(ms) { const t = { t: randB64(16), exp: Date.now() + ms }; tokens.push(t); saveTokens(); return t.t; }
+  let qrToken = null;
+  function currentQrToken() {
+    const ok = qrToken && tokens.some(t => t.t === qrToken && t.exp > Date.now() + 60000);
+    if (!ok) qrToken = makeToken(QR_TOKEN_MS);
+    return qrToken;
+  }
+  function useToken(t) { tokens = tokens.filter(x => x.t !== t); saveTokens(); if (t === qrToken) { qrToken = null; renderMe(); } }
 
   function iceServers() {
     const list = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }];
@@ -354,25 +522,33 @@
     }
     return o;
   }
-  function inviteLink() { return location.origin + location.pathname + '#' + myCode; }
+  const appLink = () => location.origin + location.pathname;
+  function inviteLink(token) { return appLink() + '#' + myCode + (token ? '.' + token : ''); }
+  function parseInvite(text) {
+    text = String(text || '').trim();
+    let frag = text;
+    try { const u = new URL(text); frag = u.hash.replace(/^#/, ''); if (!frag) return null; } catch {}
+    const m = /^([A-Za-z0-9]{6})(?:\.([A-Za-z0-9_-]{16,64}))?$/.exec(frag.trim());
+    return m ? { code: m[1].toUpperCase(), token: m[2] || null } : null;
+  }
   function renderMe() {
     $('myCode').textContent = myCode;
-    $('myName').textContent = settings.name;
+    $('myName').textContent = 'This device: ' + settings.name;
+    $('footName').textContent = `${settings.name} (${myCode})`;
     $('version').textContent = 'QuickShare ' + APP_VERSION;
-    try { const q = qrcode(0, 'M'); q.addData(inviteLink()); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch {}
+    if (!$('addDlg').open) return;
+    try { const q = qrcode(0, 'M'); q.addData(inviteLink(currentQrToken())); q.make(); $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch {}
   }
 
   // =====================================================================
-  //  Remembered devices
+  //  Paired devices
   // =====================================================================
-  // A device the user approved is remembered. "Always allow" = trusted forever; otherwise it may
-  // reconnect without asking for ALLOW_HOURS. Remembered + allowed devices are reconnected automatically.
   const devices = new Map(); // code -> device
   function makeDevice(code, name) {
-    return { code, name: name || code, trusted: false, allowedUntil: 0, lastSeen: 0, remembered: false,
-      conn: null, outgoing: false, ready: false, state: 'offline', paused: false, selected: true, asking: false,
-      retryTimer: null, retryDelay: 0, lastRecv: 0, rtt: null, route: '', nearby: false, unreachable: false, everConnected: false,
-      outbox: [], pumping: false, waiters: new Map(), rx: null, partials: new Map(), completed: new Set(),
+    return { code, name: name || code, pub: null, paired: false, legacy: false, platform: '', lastSeen: 0, keyMismatch: false,
+      conn: null, outgoing: false, ready: false, state: 'offline', paused: false, selected: true, wantPair: false, pendingToken: null,
+      retryTimer: null, retryDelay: 0, lastRecv: 0, rtt: null, route: '', nearby: false, unreachable: false, everConnected: false, oldApp: false,
+      outbox: [], pumping: false, waiters: new Map(), rx: null, partials: new Map(), completed: new Set(), inBatches: new Map(),
       pingTimer: null, openTimer: null };
   }
   function getDevice(code, create) {
@@ -380,24 +556,38 @@
     if (!d && create) { d = makeDevice(code); devices.set(code, d); }
     return d;
   }
-  const isAllowed = (d) => d.trusted || d.allowedUntil > Date.now();
+  const isListed = (d) => d.paired || d.legacy || d.keyMismatch || d.wantPair || (d.conn && !d.conn._dead) || d.outbox.some(j => !isFinal(j));
   function saveDevices() {
-    store.set('devices', [...devices.values()].filter(d => d.remembered)
-      .map(d => ({ code: d.code, name: d.name, trusted: d.trusted, allowedUntil: d.allowedUntil, lastSeen: d.lastSeen })));
+    store.set('devices', [...devices.values()].filter(d => d.paired || d.legacy || d.keyMismatch)
+      .map(d => ({ code: d.code, name: d.name, pub: d.paired || d.keyMismatch ? d.pub : null, paired: d.paired, legacy: d.legacy && !d.paired,
+        platform: d.platform, lastSeen: d.lastSeen, keyMismatch: d.keyMismatch, selected: d.selected })));
   }
   (function loadDevices() {
     for (const x of store.get('devices', [])) {
       if (!x || !validCode(x.code)) continue;
       const d = getDevice(x.code, true);
-      Object.assign(d, { name: clean(x.name) || x.code, trusted: !!x.trusted, allowedUntil: Number(x.allowedUntil) || 0, lastSeen: Number(x.lastSeen) || 0, remembered: true });
+      const v3 = typeof x.paired === 'boolean';
+      Object.assign(d, { name: clean(x.name) || x.code, lastSeen: Number(x.lastSeen) || 0, platform: clean(x.platform, 12), selected: x.selected !== false });
+      if (v3) { d.paired = !!(x.paired && x.pub); d.pub = x.pub || null; d.legacy = !!x.legacy; d.keyMismatch = !!x.keyMismatch; }
+      else { d.legacy = true; } // remembered by version 2 (no security key yet) — needs pairing once
     }
-    for (const code of store.get('trusted', [])) { // from version 1
-      if (!validCode(code)) continue;
-      const d = getDevice(code, true); d.trusted = true; d.remembered = true;
-    }
+    for (const code of store.get('trusted', [])) { if (validCode(code)) { const d = getDevice(code, true); if (!d.paired) d.legacy = true; } }
     try { localStorage.removeItem('qs.trusted'); } catch {}
     saveDevices();
   })();
+  const wantsConnection = (d) => d.paired && !d.paused && !d.keyMismatch;
+
+  // =====================================================================
+  //  History (kept only on this device)
+  // =====================================================================
+  let xhist = store.get('history', []);
+  function addHistory(h) {
+    if (settings.history === false) return;
+    xhist.unshift(Object.assign({ at: Date.now() }, h));
+    if (xhist.length > 400) xhist.length = 400;
+    store.set('history', xhist);
+    if (!$('hist').hidden) renderHistory();
+  }
 
   // =====================================================================
   //  Connection service (signaling). Never changes the code by itself and never
@@ -420,13 +610,13 @@
       peerRetryDelay = 2000; codeTakenSince = 0;
       setNet('on', 'Online'); log('Connected to the connection service');
       openInviteFromLink();
-      for (const d of devices.values()) if (wantsConnection(d) && !d.conn) scheduleRetry(d, 300);
+      for (const d of devices.values()) if ((wantsConnection(d) || d.wantPair) && !d.conn) scheduleRetry(d, 300);
     });
     p.on('connection', (conn) => { if (peer === p) handleIncoming(conn); });
     p.on('disconnected', () => {
       if (peer !== p || p.destroyed) return;
       const anyDevice = [...devices.values()].some(d => d.ready);
-      setNet(anyDevice ? 'on' : 'wait', anyDevice ? 'Online · refreshing service' : 'Reconnecting…');
+      setNet(anyDevice ? 'on' : 'wait', anyDevice ? 'Online' : 'Reconnecting…');
       log('Connection service link dropped — reconnecting (device connections stay up)');
       schedulePeerRetry();
     });
@@ -446,7 +636,7 @@
         const long = Date.now() - codeTakenSince > 120000;
         setNet('wait', long ? 'Code busy — open in another tab?' : 'Reconnecting…');
         log('Service still holds this device code from the last session — waiting for it to be released');
-        schedulePeerRetry(8000);
+        schedulePeerRetry(6000);
         return;
       }
       if (['network', 'server-error', 'socket-error', 'socket-closed'].includes(type)) {
@@ -468,36 +658,39 @@
       if (!peer || peer.destroyed) { startPeer(); return; }
       if (peer.open) return;
       if (peer.disconnected) { try { peer.reconnect(); } catch { startPeer(); } }
-      else schedulePeerRetry(); // still on its first attempt
+      else schedulePeerRetry();
     }, ms);
   }
-  function kickPeer() { // called when coming back online / to the foreground
+  function kickPeer() {
     if (peer && peer.open) return;
     peerRetryDelay = 1000; clearTimeout(peerRetryTimer); peerRetryTimer = null; schedulePeerRetry(300);
   }
   setInterval(() => { if (peer && !peer.open && !peerRetryTimer) schedulePeerRetry(); }, 15000);
 
   // =====================================================================
-  //  Device connections: approval, keepalive, automatic reconnect
+  //  Device connections: secure handshake, keepalive, automatic reconnect
   // =====================================================================
   const codeOf = (conn) => conn.peer.startsWith(PREFIX) ? conn.peer.slice(PREFIX.length) : conn.peer;
-  function send(d, obj) { if (d.conn && d.conn.open) { try { d.conn.send(JSON.stringify(obj)); return true; } catch {} } return false; }
-  const wantsConnection = (d) => d.remembered && isAllowed(d) && !d.paused;
+  function sendc(conn, obj) { if (conn && conn.open) { try { conn.send(JSON.stringify(obj)); return true; } catch {} } return false; }
+  function send(d, obj) { return d.ready ? sendc(d.conn, obj) : false; }
 
-  function connectTo(code, manual) {
+  // opts: { manual, pair, token }
+  function connectTo(code, opts = {}) {
     code = String(code || '').trim().toUpperCase();
-    if (!validCode(code)) { if (manual) toast('Codes are 6 letters/numbers.'); return null; }
-    if (code === myCode) { if (manual) toast("That's this device's own code."); return null; }
+    if (!validCode(code)) { if (opts.manual) toast('Codes are 6 letters/numbers.'); return null; }
+    if (code === myCode) { if (opts.manual) toast("That's this device's own code."); return null; }
     const d = getDevice(code, true);
-    if (manual) { d.paused = false; d.retryDelay = 0; }
-    if (d.ready) { if (manual) toast('Already connected to ' + d.name); return d; }
-    if (d.conn && !d.conn._dead) return d; // already trying
-    if (!peer || !peer.open) { if (manual) toast('Still going online — will connect as soon as possible.'); d.manualPending = manual || d.manualPending; scheduleRetry(d, 2000); render(); return d; }
+    if (opts.manual) { d.paused = false; d.retryDelay = 0; d.unreachable = false; }
+    if (opts.pair || (opts.manual && !d.paired)) { d.wantPair = true; if (d.keyMismatch && opts.manual) d.keyMismatch = false; }
+    if (opts.token) d.pendingToken = opts.token;
+    if (d.ready) { if (opts.manual) toast('Already connected to ' + d.name); return d; }
+    if (d.conn && !d.conn._dead) { if (opts.manual && d.wantPair) showPairWaiting(d, null); return d; }
+    if (!peer || !peer.open) { if (opts.manual) toast('Still going online — will connect as soon as possible.'); scheduleRetry(d, 2000); render(); return d; }
     clearTimeout(d.retryTimer); d.retryTimer = null;
-    log(`Connecting to ${d.name} (${code})`);
-    const conn = peer.connect(PREFIX + code, { reliable: true, serialization: 'raw', metadata: { name: settings.name, v: 2 } });
+    log(`Connecting to ${d.name} (${code})${d.wantPair ? ' to pair' : ''}`);
+    const conn = peer.connect(PREFIX + code, { reliable: true, serialization: 'raw', metadata: { name: settings.name, v: 3 } });
     attach(d, conn, true);
-    if (manual && !isAllowed(d)) toast('Waiting for the other device to tap Allow…');
+    if (opts.manual && d.wantPair) showPairWaiting(d, null);
     return d;
   }
 
@@ -518,25 +711,33 @@
 
   function attach(d, conn, outgoing) {
     if (d.conn && d.conn !== conn) {
-      // A newer link replaces the old one (e.g. the other device reloaded): release everything tied to the old link.
       const old = d.conn; old._dead = true; try { old.close(); } catch {}
       clearInterval(d.pingTimer); d.pingTimer = null;
       for (const w of d.waiters.values()) w.reject(new ConnLost());
       d.waiters.clear();
       pauseIncoming(d);
+      d.ready = false;
     }
     d.conn = conn; d.outgoing = outgoing; d.ready = false; d.unreachable = false;
     d.state = 'connecting';
+    conn._chain = Promise.resolve();
     clearTimeout(d.openTimer);
-    if (outgoing) d.openTimer = setTimeout(() => {
-      if (d.conn === conn && !d.ready) { log(`No answer from ${d.name}`); dropConn(d, conn, 'no answer'); }
-    }, isAllowed(d) ? 20000 : 90000);
-    conn.on('open', () => {
+    const started = Date.now();
+    const check = () => {
+      if (d.conn !== conn || d.ready) return;
+      if (conn._hs && conn._hs.waitingUser && Date.now() - started < 180000) { d.openTimer = setTimeout(check, 10000); return; }
+      log(`No answer from ${d.name}`); dropConn(d, conn, 'no answer');
+    };
+    d.openTimer = setTimeout(check, outgoing ? 25000 : 40000);
+    conn.on('open', async () => {
       if (d.conn !== conn) return;
       d.lastRecv = Date.now();
-      if (outgoing) send(d, { t: 'hello', name: settings.name, v: 2 });
+      await identityReady;
+      const hs = conn._hs = { myNonce: randB64(18), myIntent: d.wantPair ? 'pair' : 'auto' };
+      sendc(conn, { t: 'hi3', v: 3, app: APP_VERSION, code: myCode, name: settings.name, platform: myPlatform, pub: myPub, nonce: hs.myNonce,
+        intent: hs.myIntent, known: !!(d.paired && d.pub), token: !!(d.wantPair && d.pendingToken) });
     });
-    conn.on('data', (data) => { if (d.conn !== conn) return; d.lastRecv = Date.now(); onData(d, data); });
+    conn.on('data', (data) => { if (d.conn !== conn) return; d.lastRecv = Date.now(); onData(d, conn, data); });
     conn.on('close', () => onConnClosed(d, conn, 'closed'));
     conn.on('error', (e) => { log(`Link error with ${d.name}: ${e && e.type || e}`); onConnClosed(d, conn, 'error'); });
     render();
@@ -545,76 +746,198 @@
 
   function onConnClosed(d, conn, why) {
     if (conn._handled) return; conn._handled = true; conn._dead = true;
-    if (d.conn !== conn) return; // replaced by a newer link
+    if (conn._hs && conn._hs.askHandle) conn._hs.askHandle.cancel();
+    if (d.conn !== conn) return;
     const wasReady = d.ready;
-    d.conn = null; d.ready = false; d.asking = false;
+    d.conn = null; d.ready = false;
     clearTimeout(d.openTimer); clearInterval(d.pingTimer); d.pingTimer = null;
     for (const w of d.waiters.values()) w.reject(new ConnLost());
     d.waiters.clear();
     pauseIncoming(d);
     if (wasReady) log(`Lost connection to ${d.name} (${why})`);
+    if (pairUi && pairUi.d === d && !d.ready) { if (why !== 'declined' && why !== 'cancelled') pairUiFail(d, why === 'security' ? null : `Couldn't reach ${d.name}. Make sure QuickShare is open there, then try again.`); }
     if (wantsConnection(d)) { d.state = 'reconnecting'; scheduleRetry(d); }
-    else d.state = 'offline';
+    else { d.state = 'offline'; if (!d.paired && !d.legacy && !d.keyMismatch && !d.outbox.some(j => !isFinal(j))) { d.wantPair = false; d.pendingToken = null; } }
     render(); updateTransfersUI();
   }
 
   function scheduleRetry(d, delay) {
     clearTimeout(d.retryTimer);
-    if (!wantsConnection(d) && !d.manualPending) return;
+    if (!wantsConnection(d) && !d.wantPair) return;
     if (delay == null) {
       d.retryDelay = Math.min(30000, d.retryDelay ? d.retryDelay * 2 : 1000);
       delay = d.retryDelay;
-      // Only one side dials first (the smaller code); the other waits a bit longer in case it can't.
-      if (myCode > d.code) delay = Math.max(delay, 6000);
+      if (myCode > d.code) delay = Math.max(delay, 6000); // only one side dials first (the smaller code)
     }
     d.retryTimer = setTimeout(() => {
       d.retryTimer = null;
       if (d.ready || (d.conn && !d.conn._dead)) return;
       if (!peer || !peer.open) { scheduleRetry(d, 3000); return; }
-      d.manualPending = false;
-      connectTo(d.code, false);
+      if (!wantsConnection(d) && !d.wantPair) return;
+      connectTo(d.code, {});
     }, delay);
   }
   function deviceUnreachable(d) {
     d.unreachable = true;
-    if (d.conn && !d.ready) { const c = d.conn; c._dead = true; try { c.close(); } catch {} d.conn = null; clearTimeout(d.openTimer); }
+    if (d.conn && !d.ready) { const c = d.conn; c._dead = true; c._handled = true; try { c.close(); } catch {} d.conn = null; clearTimeout(d.openTimer); }
+    if (pairUi && pairUi.d === d) { pairUiFail(d, `${d.code} is not online. Check the code, and that QuickShare is open on that device.`); d.wantPair = false; d.pendingToken = null; }
     d.state = wantsConnection(d) ? 'reconnecting' : 'offline';
-    if (!wantsConnection(d) && !d.remembered) toast(`${d.code} is not online. Check the code and that QuickShare is open there.`);
     if (wantsConnection(d)) { d.retryDelay = Math.max(d.retryDelay, 8000); scheduleRetry(d); }
+    else if (!isListed(d)) devices.delete(d.code);
     render();
   }
 
-  // ---- approval ----
-  async function onHello(d, m) {
-    d.name = clean(m.name) || d.code;
-    let ok = isAllowed(d), always = false;
-    if (!ok) {
-      d.asking = true; render();
-      const r = await ask({ title: 'Connection request', text: `“${d.name}” (code ${d.code}) wants to connect and exchange files with this device.`,
-        check: 'Always allow this device', yes: 'Allow', no: 'Decline' });
-      d.asking = false; ok = r.ok; always = r.checked;
+  // ---- secure handshake ----
+  // 1. Both sides send hi3 {key, random nonce}. 2. Both sign (their nonce + both connection fingerprints) and verify.
+  // 3. Paired already on both sides → ready. Otherwise pair: QR/link secret (instant) or a 6-digit number shown on both screens.
+  async function onHi3(d, conn, m) {
+    const hs = conn._hs; if (!hs || hs.gotHi) return;
+    hs.gotHi = true;
+    if (m.code !== d.code || typeof m.pub !== 'string' || typeof m.nonce !== 'string') { log(`Bad hello from ${d.code}`); dropConn(d, conn, 'protocol'); return; }
+    d.name = clean(m.name) || d.name; d.platform = clean(m.platform, 12) || d.platform; d.appVersion = clean(m.app, 10); d.oldApp = false;
+    Object.assign(hs, { theirPub: m.pub, theirNonce: m.nonce, theirIntent: m.intent === 'pair' ? 'pair' : 'auto', theirKnown: !!m.known, theirToken: !!m.token });
+    try { hs.theirKey = await importPub(m.pub); } catch { log(`${d.name} sent an invalid key`); dropConn(d, conn, 'protocol'); return; }
+    const fps = fingerprints(conn);
+    if (!fps) { log('Could not read the connection fingerprints'); dropConn(d, conn, 'protocol'); return; }
+    hs.fps = fps;
+    const sig = await signText(`qs3-auth|${hs.theirNonce}|${fps.local}|${fps.remote}|${myCode}|${d.code}`);
+    sendc(conn, { t: 'auth', sig });
+  }
+  async function onAuth(d, conn, m) {
+    const hs = conn._hs; if (!hs || !hs.gotHi || hs.verified || !hs.theirKey) return;
+    const ok = await verifyText(hs.theirKey, String(m.sig || ''), `qs3-auth|${hs.myNonce}|${hs.fps.remote}|${hs.fps.local}|${d.code}|${myCode}`);
+    if (!ok) { log(`⚠️ ${d.name}: security check failed — connection refused`); toast(`Security check failed for ${d.name} — not connected`); dropConn(d, conn, 'security'); return; }
+    hs.verified = true;
+    hs.sas = await matchNumber(hs.fps, myPub, hs.theirPub);
+    await decide(d, conn);
+  }
+  async function decide(d, conn) {
+    const hs = conn._hs;
+    const myKnown = d.paired && d.pub === hs.theirPub;
+    const mismatch = !!d.pub && d.pub !== hs.theirPub;
+    const iWant = hs.myIntent === 'pair', theyWant = hs.theirIntent === 'pair';
+    if (myKnown) {
+      if (hs.theirKnown) return localOk(d, conn);
+      if (theyWant) { hs.done = true; sendc(conn, { t: 'paired', name: settings.name }); return localOk(d, conn); } // they re-pair with us: we already trust their key
+      if (iWant) { hs.role = 'initiator'; showPairWaiting(d, null); return; }
+      log(`${d.name} no longer has this device paired`);
+      unpairLocal(d, `${d.name} removed this device. Pair again to send files.`); dropConn(d, conn, 'unpaired'); return;
     }
-    if (!d.conn || !d.conn.open) return;
-    if (!ok) { send(d, { t: 'reject' }); log(`Declined ${d.name}`); setTimeout(() => d.conn && d.conn.close(), 300); return; }
-    if (always) d.trusted = true;
-    d.allowedUntil = Date.now() + ALLOW_HOURS * 3600e3;
-    send(d, { t: 'accept', name: settings.name, trust: d.trusted, v: 2 });
-    markReady(d);
+    if (mismatch) {
+      // The key on file doesn't match. Never re-pair silently: only the person can approve it, after comparing numbers.
+      if (theyWant) { hs.role = 'responder'; return askToPair(d, conn, true); }
+      log(`⚠️ ${d.name} (${d.code}) has a different security key than before — not connecting`);
+      d.keyMismatch = true; d.paired = false; saveDevices(); dropConn(d, conn, 'security');
+      toast(`⚠️ ${d.name}'s security key changed — review it under My devices`); return;
+    }
+    // Not paired (yet) on this side.
+    if (!theyWant && !iWant) { if (hs.theirKnown) sendc(conn, { t: 'unpaired' }); dropConn(d, conn, 'not paired'); return; }
+    const tokenFlow = (iWant && d.pendingToken) || hs.theirToken;
+    let initiator;
+    if (tokenFlow) initiator = !!(iWant && d.pendingToken);
+    else if (iWant && theyWant) initiator = myCode > d.code; // both tapped at once: the smaller code is asked first
+    else initiator = iWant;
+    hs.role = initiator ? 'initiator' : 'responder';
+    if (initiator) {
+      if (d.pendingToken) {
+        showPairWaiting(d, null);
+        hs.usedToken = d.pendingToken;
+        const proof = await hmac(unb64url(d.pendingToken), `qs3-pair|${hs.fps.local}|${hs.fps.remote}|${myPub}|${hs.theirPub}`);
+        sendc(conn, { t: 'pair', proof });
+      } else { hs.waitingUser = true; showPairWaiting(d, hs.sas, conn); }
+      return;
+    }
+    // responder
+    if (hs.theirToken) { hs.tokenTimer = setTimeout(() => { if (!hs.done && d.conn === conn) askToPair(d, conn, false); }, 6000); return; }
+    askToPair(d, conn, false);
   }
-  function onAccept(d, m) {
-    d.name = clean(m.name) || d.name;
-    if (m.trust) d.trusted = true;
-    d.allowedUntil = Date.now() + ALLOW_HOURS * 3600e3;
-    markReady(d);
+  async function onPair(d, conn, m) {
+    const hs = conn._hs; if (!hs || !hs.verified || hs.role !== 'responder' || hs.done) return;
+    clearTimeout(hs.tokenTimer);
+    const transcript = `qs3-pair|${hs.fps.remote}|${hs.fps.local}|${hs.theirPub}|${myPub}`;
+    for (const t of tokens.filter(x => x.exp > Date.now())) {
+      const bytes = unb64url(t.t);
+      if (await hmac(bytes, transcript) === m.proof) {
+        useToken(t.t); hs.done = true;
+        log(`Paired with ${d.name} using this device's QR code / invite link`);
+        const proof2 = await hmac(bytes, 'qs3-paired|' + transcript);
+        storePairing(d, hs.theirPub);
+        sendc(conn, { t: 'paired', name: settings.name, proof2 });
+        return localOk(d, conn);
+      }
+    }
+    log(`${d.name}: the QR code / link it used has expired — asking to confirm instead`);
+    askToPair(d, conn, !!d.pub && d.pub !== hs.theirPub);
   }
-  function markReady(d) {
+  async function askToPair(d, conn, mismatch) {
+    const hs = conn._hs; if (hs.asking || hs.done) return;
+    hs.asking = true; hs.waitingUser = true; render();
+    const handle = ask({ title: mismatch ? '⚠️ Pair again?' : 'Pair with a new device?',
+      text: mismatch ? `“${d.name}” (code ${d.code}) wants to pair, but its security key is different from before. Only continue if you reset or reinstalled QuickShare on that device.`
+                     : `“${d.name}” (code ${d.code}) wants to pair with this device to exchange files.`,
+      sas: hs.sas, note: 'Check that the other device shows the same number. If it doesn’t, tap Decline.', yes: 'Pair', no: 'Decline' });
+    hs.askHandle = handle;
+    const r = await handle.promise;
+    hs.asking = false; hs.waitingUser = false; hs.askHandle = null;
+    if (d.conn !== conn || !conn.open) return;
+    if (!r.ok) { sendc(conn, { t: 'reject' }); log(`Declined pairing with ${d.name}`); d.wantPair = false; setTimeout(() => dropConn(d, conn, 'declined'), 300); return; }
+    hs.done = true;
+    storePairing(d, hs.theirPub);
+    sendc(conn, { t: 'paired', name: settings.name });
+    localOk(d, conn);
+  }
+  async function onPaired(d, conn, m) {
+    const hs = conn._hs; if (!hs || !hs.verified || hs.done || hs.role !== 'initiator') return;
+    if (hs.usedToken) {
+      const expect = await hmac(unb64url(hs.usedToken), `qs3-paired|qs3-pair|${hs.fps.local}|${hs.fps.remote}|${myPub}|${hs.theirPub}`);
+      if (expect !== m.proof2) {
+        // The QR/link wasn't accepted (expired?) — the other device asked its user instead, so confirm the number here too.
+        if (!hs.fallbackSas) { hs.fallbackSas = true; hs.usedToken = null; }
+      }
+    }
+    hs.gotPaired = true;
+    finishInitiator(d, conn);
+  }
+  // Pairing by number needs a "yes" on BOTH screens; pairing by QR secret or with a key we already trust doesn't.
+  function finishInitiator(d, conn) {
+    const hs = conn._hs; if (!hs || hs.done || !hs.gotPaired) return;
+    const trusted = d.paired && d.pub === hs.theirPub;
+    if (!trusted && !hs.usedToken && !hs.userOk) { hs.waitingUser = true; showPairWaiting(d, hs.sas, conn); $('pairNote').textContent = `${d.name} said yes. Tap “Numbers match” if it shows the same number.`; return; }
+    hs.done = true;
+    if (!trusted) storePairing(d, hs.theirPub);
+    localOk(d, conn);
+  }
+  function storePairing(d, pub) {
+    const isNew = !d.paired;
+    d.pub = pub; d.paired = true; d.legacy = false; d.keyMismatch = false; d.wantPair = false; d.pendingToken = null; d.paused = false;
+    saveDevices();
+    if (isNew) log(`Paired with ${d.name}`);
+  }
+  function localOk(d, conn) {
+    const hs = conn._hs; hs.localOk = true; hs.done = true;
+    sendc(conn, { t: 'ok' });
+    if (hs.remoteOk) markReady(d, conn);
+  }
+  function onOk(d, conn) {
+    const hs = conn._hs; if (!hs || !hs.verified) return;
+    hs.remoteOk = true;
+    if (hs.localOk) markReady(d, conn);
+  }
+  function unpairLocal(d, msg) {
+    d.paired = false; d.pub = null; d.wantPair = false; d.legacy = false; d.paused = true;
+    for (const j of d.outbox) if (!isFinal(j)) { j.state = 'failed'; j.ui.finish('Not sent — the device is no longer paired', false); }
+    saveDevices(); if (msg) toast(msg); render(); updateTransfersUI();
+  }
+  function markReady(d, conn) {
+    if (d.conn !== conn || d.ready) return;
     const again = d.everConnected;
-    d.ready = true; d.state = 'connected'; d.paused = false; d.unreachable = false;
-    d.everConnected = true; d.remembered = true; d.lastSeen = Date.now(); d.retryDelay = 0; d.manualPending = false;
+    d.ready = true; d.state = 'connected'; d.paused = false; d.unreachable = false; d.wantPair = false; d.pendingToken = null;
+    d.everConnected = true; d.lastSeen = Date.now(); d.retryDelay = 0;
     clearTimeout(d.openTimer); clearTimeout(d.retryTimer);
     saveDevices();
-    log(`${again ? 'Reconnected' : 'Connected'} to ${d.name}`);
-    toast((again ? 'Reconnected to ' : 'Connected to ') + d.name);
+    log(`${again ? 'Reconnected' : 'Connected'} securely to ${d.name}`);
+    if (pairUi && pairUi.d === d) pairUiDone(d);
+    else toast((again ? 'Reconnected to ' : 'Connected to ') + d.name);
     startPing(d);
     setTimeout(() => detectRoute(d), 1500);
     render();
@@ -630,7 +953,7 @@
       send(d, { t: 'ping', ts: Date.now() });
     }, PING_EVERY);
   }
-  function healthCheckAll() { // after coming back to the app: confirm links are still alive
+  function healthCheckAll() {
     for (const d of devices.values()) {
       if (!d.ready || !d.conn) continue;
       if (Date.now() - d.lastRecv > 6000) {
@@ -640,18 +963,21 @@
     }
     for (const d of devices.values()) if (wantsConnection(d) && !d.conn && !d.retryTimer) scheduleRetry(d, 500);
   }
+  async function selectedPair(pc) {
+    const stats = await pc.getStats(); const byId = new Map(); let pair = null;
+    stats.forEach(r => byId.set(r.id, r));
+    stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = byId.get(r.selectedCandidatePairId) || pair; });
+    if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && r.selected) pair = r; });
+    if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded' && (!pair || (r.bytesReceived || 0) > (pair.bytesReceived || 0))) pair = r; });
+    if (!pair) return null;
+    return { pair, l: byId.get(pair.localCandidateId), r: byId.get(pair.remoteCandidateId) };
+  }
   async function detectRoute(d) {
     const pc = d.conn && d.conn.peerConnection; if (!pc) return;
     try {
-      const stats = await pc.getStats(); const byId = new Map(); let pair = null;
-      stats.forEach(r => byId.set(r.id, r));
-      stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = byId.get(r.selectedCandidatePairId) || pair; });
-      if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && (r.selected || (r.nominated && r.state === 'succeeded'))) pair = r; });
-      if (!pair) return;
-      const l = byId.get(pair.localCandidateId), r = byId.get(pair.remoteCandidateId);
-      if (!l || !r) return;
-      d.route = (l.candidateType === 'relay' || r.candidateType === 'relay') ? 'relay' : (l.candidateType === 'host' && r.candidateType === 'host') ? 'wifi' : 'internet';
-      if (pair.currentRoundTripTime) d.rtt = Math.round(pair.currentRoundTripTime * 1000);
+      const s = await selectedPair(pc); if (!s || !s.l || !s.r) return;
+      d.route = (s.l.candidateType === 'relay' || s.r.candidateType === 'relay') ? 'relay' : isLocalPair(s.l, s.r) ? 'wifi' : 'internet';
+      if (s.pair.currentRoundTripTime) d.rtt = Math.round(s.pair.currentRoundTripTime * 1000);
       render();
     } catch {}
   }
@@ -666,20 +992,34 @@
       d.waiters.set(id, { types, resolve: (m) => { clearTimeout(timer); d.waiters.delete(id); resolve(m); }, reject: (e) => { clearTimeout(timer); reject(e); } });
     });
   }
-  async function onData(d, data) {
-    if (typeof data !== 'string') { onChunk(d, data); return; }
+  async function onUnpaired(d, conn) {
+    const hs = conn._hs; if (!hs || !hs.verified) return; // only the real (verified) device can unpair us
+    if (d.paired && d.pub === hs.theirPub && !d.ready) { unpairLocal(d, `${d.name} removed this device. Pair again to send files.`); dropConn(d, conn, 'unpaired'); }
+  }
+  const HS = { hi3: onHi3, auth: onAuth, pair: onPair, paired: onPaired, ok: onOk, unpaired: onUnpaired };
+  function onData(d, conn, data) {
+    if (typeof data !== 'string') { if (d.ready) onChunk(d, data); return; }
     let m; try { m = JSON.parse(data); } catch { return; }
+    if (HS[m.t]) { conn._chain = conn._chain.then(() => HS[m.t](d, conn, m)).catch((e) => log('Handshake error: ' + (e && e.message || e))); return; }
+    switch (m.t) {
+      case 'hello': // QuickShare 2.x on the other side
+        d.oldApp = true; log(`${d.name} runs an older QuickShare (2.x)`);
+        toast(`${d.name} has an old version of QuickShare. Close it there and open it again to update.`);
+        dropConn(d, conn, 'old version'); return;
+      case 'reject': if (conn._hs && conn._hs.role === 'initiator') { pairUiFail(d, `${d.name} declined.`); d.wantPair = false; d.pendingToken = null; dropConn(d, conn, 'declined'); } return;
+      case 'bye': if (!d.ready) return; log(`${d.name} disconnected on purpose`); d.paused = true; if (d.conn) d.conn.close(); return;
+    }
+    if (!d.ready) return;
     if (m.id != null) { const w = d.waiters.get(String(m.id)); if (w && w.types.includes(m.t)) { w.resolve(m); return; } }
     switch (m.t) {
-      case 'hello': onHello(d, m); break;
-      case 'accept': onAccept(d, m); break;
-      case 'reject': toast(d.name + ' declined the connection.'); log(`${d.name} declined`); d.paused = true; d.allowedUntil = 0; d.trusted = false; setTimeout(() => d.conn && d.conn.close(), 100); break;
-      case 'bye': log(`${d.name} disconnected on purpose`); d.paused = true; if (d.conn) d.conn.close(); break;
+      case 'unpair': log(`${d.name} removed this device`); unpairLocal(d, `${d.name} removed this device.`); dropConn(d, conn, 'unpaired'); break;
       case 'ping': send(d, { t: 'pong', ts: m.ts }); break;
       case 'pong': if (m.ts) { d.rtt = Date.now() - m.ts; } break;
-      case 'file': if (d.ready) onFileMeta(d, m); break;
-      case 'end': if (d.ready) onFileEnd(d, String(m.id)); break;
+      case 'file': onFileMeta(d, m); break;
+      case 'end': onFileEnd(d, String(m.id)); break;
       case 'abort': onSenderAbort(d, String(m.id)); break;
+      case 'text': onText(d, m); break;
+      case 'batchend': onBatchEnd(d, m); break;
       case 'cancel': { const j = d.outbox.find(x => x.id === String(m.id)); if (j && !isFinal(j)) { j.state = 'cancelled'; j.ui.finish('Cancelled by ' + d.name, false); updateTransfersUI(); } break; }
     }
   }
@@ -688,39 +1028,80 @@
   //  Sending: per-device queue that survives disconnects and resumes
   // =====================================================================
   const isFinal = (j) => ['done', 'cancelled', 'failed'].includes(j.state);
-  function queueFiles(files, targets) {
-    if (!files.length || !targets.length) return;
+  // items: [{ file, path }]  (path = folder inside a sent folder, '' for plain files)
+  function queueFiles(files, targets, folderName) {
+    const items = files.map(f => (f && f.file) ? f : { file: f, path: '' }).filter(it => !JUNK.test(it.file.name || ''));
+    if (!items.length || !targets.length) return;
     for (const d of targets) {
-      for (const f of files) {
-        const job = { id: uid(), file: f, name: f.name || 'file', size: f.size, type: f.type || 'application/octet-stream', state: 'queued', d, tries: 0 };
-        job.ui = xferRow('out', job.name, job.size, d.name);
-        job.ui.onCancel(() => cancelJob(job));
-        job.ui.status(d.ready ? 'Waiting to send…' : `Waiting for ${d.name} to connect…`, true);
+      let batch = null;
+      if (folderName) {
+        batch = { id: uid(), name: folderName, count: items.length, total: items.reduce((s, it) => s + it.file.size, 0), jobs: [], endSent: false };
+        batch.group = groupRow('out', folderName, batch.count, batch.total, d.name);
+        batch.group.onCancel(() => { for (const j of batch.jobs) cancelJob(j); });
+        batch.group.status(d.ready ? 'Waiting to send…' : `Waiting for ${d.name} to connect…`);
+      }
+      for (const it of items) {
+        const f = it.file;
+        const job = { id: uid(), kind: 'file', file: f, name: f.name || 'file', size: f.size, type: f.type || 'application/octet-stream', path: it.path || '', state: 'queued', d, tries: 0, batch };
+        if (batch) { job.ui = batch.group.member(job.size); batch.jobs.push(job); }
+        else {
+          job.ui = xferRow('out', job.name, job.size, d.name);
+          job.ui.onCancel(() => cancelJob(job));
+          job.ui.status(d.ready ? 'Waiting to send…' : `Waiting for ${d.name} to connect…`, true);
+        }
         d.outbox.push(job);
       }
-      log(`Queued ${files.length} file(s) for ${d.name}`);
-      if (d.ready) pump(d); else connectTo(d.code, false);
+      log(`Queued ${items.length} file(s)${folderName ? ' (folder)' : ''} for ${d.name}`);
+      if (d.ready) pump(d); else connectTo(d.code, {});
     }
-    updateTransfersUI(); applyKeepAwake();
+    showTab('now'); updateTransfersUI(); applyKeepAwake();
+  }
+  function queueText(text, targets) {
+    text = String(text || '').slice(0, MAX_TEXT); if (!text.trim() || !targets.length) return;
+    for (const d of targets) {
+      const job = { id: uid(), kind: 'text', text, name: text.split('\n')[0].slice(0, 60), size: enc.encode(text).length, state: 'queued', d, tries: 0 };
+      job.ui = textRow('out', text, d.name);
+      job.ui.onCancel(() => cancelJob(job));
+      job.ui.status(d.ready ? 'Sending…' : `Waiting for ${d.name} to connect…`);
+      d.outbox.push(job);
+      if (d.ready) pump(d); else connectTo(d.code, {});
+    }
+    showTab('now'); updateTransfersUI();
   }
   async function pump(d) {
     if (d.pumping) return;
     d.pumping = true;
     try {
       while (d.ready) {
+        finishBatches(d);
         const job = d.outbox.find(j => !isFinal(j));
         if (!job) break;
         try { await sendJob(d, job); }
         catch (e) {
-          if (e instanceof ConnLost) { if (!isFinal(job)) { job.state = 'paused'; job.ui.status(`Paused — reconnecting to ${d.name}…`, true); } break; }
-          job.state = 'failed'; job.ui.finish('Failed: ' + (e.message || e), false); addRetry(job);
+          if (e instanceof ConnLost) { if (!isFinal(job)) { job.state = 'paused'; job.ui.status(`Paused — reconnecting to ${d.name}…`, true); if (job.batch) job.batch.group.paused(true); } break; }
+          job.state = 'failed'; job.ui.finish('Failed: ' + (e.message || e), false); if (!job.batch) addRetry(job);
+          histOut(job, false);
         }
         updateTransfersUI();
       }
+      finishBatches(d);
     } finally {
       d.pumping = false; updateTransfersUI(); applyKeepAwake();
-      // A link may have been replaced while this loop was finishing — keep going on the new one.
       if (d.ready && d.outbox.some(j => !isFinal(j))) setTimeout(() => pump(d), 500);
+    }
+  }
+  function finishBatches(d) {
+    const seen = new Set();
+    for (const j of d.outbox) {
+      const b = j.batch; if (!b || seen.has(b) || b.endSent) continue; seen.add(b);
+      if (!b.jobs.every(isFinal)) continue;
+      if (!d.ready) continue;
+      const done = b.jobs.filter(x => x.state === 'done').length, cancelled = b.jobs.every(x => x.state === 'cancelled');
+      send(d, { t: 'batchend', id: b.id, cancelled });
+      b.endSent = true;
+      if (cancelled) b.group.finish('Cancelled', false);
+      else b.group.finish(`Sent ${done} of ${b.count} files to ${d.name} · ${fmtBytes(b.total)} in ${b.group.elapsed()}`, done === b.count);
+      if (!cancelled) addHistory({ dir: 'out', kind: 'folder', name: b.name, size: b.total, count: b.count, peer: d.name, ok: done === b.count });
     }
   }
   function waitDrain(dc, conn) {
@@ -732,17 +1113,31 @@
       dc.addEventListener('bufferedamountlow', check);
     });
   }
+  function histOut(job, ok) {
+    if (job.batch) return;
+    if (job.kind === 'text') addHistory({ dir: 'out', kind: 'text', name: job.name, text: job.text.slice(0, 4000), peer: job.d.name, ok });
+    else addHistory({ dir: 'out', kind: 'file', name: job.name, size: job.size, peer: job.d.name, ok });
+  }
   async function sendJob(d, job) {
     const conn = d.conn;
     job.state = 'sending'; job.tries++;
-    job.ui.status('Starting…');
-    if (!send(d, { t: 'file', id: job.id, name: job.name, size: job.size, type: job.type })) throw new ConnLost();
+    if (job.kind === 'text') {
+      if (!send(d, { t: 'text', id: job.id, text: job.text })) throw new ConnLost();
+      const r = await waitFor(d, job.id, ['got', 'cancel'], 20000);
+      if (job.state === 'cancelled') return;
+      job.state = 'done'; job.ui.finish(`Delivered to ${d.name}`, true); histOut(job, true); return;
+    }
+    if (job.batch) job.batch.group.paused(false);
+    job.ui.status(job.batch ? `Sending ${job.name}…` : 'Starting…');
+    const meta = { t: 'file', id: job.id, name: job.name, size: job.size, type: job.type };
+    if (job.batch) Object.assign(meta, { path: job.path, batch: { id: job.batch.id, name: job.batch.name, count: job.batch.count, total: job.batch.total } });
+    if (!send(d, meta)) throw new ConnLost();
     const reply = await waitFor(d, job.id, ['ready', 'got', 'cancel'], 20000);
     if (job.state === 'cancelled') { send(d, { t: 'abort', id: job.id }); return; }
-    if (reply.t === 'got') { job.state = 'done'; job.ui.finish(`Delivered to ${d.name}`, true); return; }
+    if (reply.t === 'got') { job.state = 'done'; job.ui.finish(`Delivered to ${d.name}`, true); histOut(job, true); return; }
     if (reply.t === 'cancel') { job.state = 'cancelled'; job.ui.finish('Cancelled by ' + d.name, false); return; }
     let offset = Math.max(0, Math.min(Number(reply.offset) || 0, job.size));
-    if (offset > 0) log(`Resuming ${job.name} to ${d.name} at ${Math.round(offset / job.size * 100)}%`);
+    if (offset > 0) log(`Resuming a file to ${d.name} at ${Math.round(offset / job.size * 100)}%`);
     job.ui.restart(offset);
     const dc = conn.dataChannel;
     while (offset < job.size) {
@@ -758,12 +1153,12 @@
       offset += block.byteLength;
     }
     send(d, { t: 'end', id: job.id });
-    job.ui.status('Finishing…');
+    job.ui.status(job.batch ? `Finishing ${job.name}…` : 'Finishing…');
     const fin = await waitFor(d, job.id, ['got', 'bad', 'cancel'], 120000 + job.size / 2000);
     if (job.state === 'cancelled') { send(d, { t: 'abort', id: job.id }); return; }
-    if (fin.t === 'got') { job.state = 'done'; job.ui.finish(`Delivered to ${d.name} · ${fmtBytes(job.size)} in ${job.ui.elapsed()}`, true); log(`Delivered ${job.name} to ${d.name}`); return; }
+    if (fin.t === 'got') { job.state = 'done'; job.ui.finish(`Delivered to ${d.name} · ${fmtBytes(job.size)} in ${job.ui.elapsed()}`, true); histOut(job, true); return; }
     if (fin.t === 'cancel') { job.state = 'cancelled'; job.ui.finish('Cancelled by ' + d.name, false); return; }
-    if (job.tries < 3) { log(`${job.name} arrived damaged — sending again`); job.state = 'queued'; return; }
+    if (job.tries < 3) { log('A file arrived damaged — sending it again'); job.state = 'queued'; return; }
     throw new Error('the file kept arriving incomplete');
   }
   function cancelJob(job) {
@@ -773,13 +1168,14 @@
     const w = job.d.waiters.get(job.id); if (w) w.resolve({ t: 'cancel-local' });
     if (!wasSending) send(job.d, { t: 'abort', id: job.id });
     job.ui.finish('Cancelled', false);
+    if (job.batch && job.batch.jobs.every(isFinal)) finishBatches(job.d);
     updateTransfersUI(); applyKeepAwake();
   }
   function addRetry(job) {
     const b = document.createElement('button'); b.className = 'ghost'; b.textContent = 'Try again';
     b.onclick = () => { b.remove(); job.state = 'queued'; job.tries = 0; job.ui.reset(); job.ui.onCancel(() => cancelJob(job));
       job.ui.status(job.d.ready ? 'Waiting to send…' : `Waiting for ${job.d.name} to connect…`, true);
-      if (job.d.ready) pump(job.d); else connectTo(job.d.code, false); updateTransfersUI(); };
+      if (job.d.ready) pump(job.d); else connectTo(job.d.code, {}); updateTransfersUI(); };
     job.ui.actions().append(b);
   }
 
@@ -799,6 +1195,35 @@
     const dir = await getOpfs(); if (!dir) return;
     try { for await (const name of dir.keys()) await dir.removeEntry(name).catch(() => {}); } catch {}
   }
+  const safeName = (n) => String(n).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').replace(/^[.\s]+/, '').trim().slice(0, 200) || 'file';
+  const safePath = (p) => String(p || '').split('/').map(s => safeName(s)).filter(s => s && s !== '_').slice(0, 24);
+
+  function onText(d, m) {
+    const id = String(m.id);
+    if (d.completed.has(id)) { send(d, { t: 'got', id }); return; }
+    d.completed.add(id);
+    const text = String(m.text || '').slice(0, MAX_TEXT);
+    send(d, { t: 'got', id });
+    const ui = textRow('in', text, d.name); ui.finish(`From ${d.name} · ${fmtWhen(Date.now())}`, true);
+    addHistory({ dir: 'in', kind: 'text', name: text.split('\n')[0].slice(0, 60), text: text.slice(0, 4000), peer: d.name, ok: true });
+    log(`Received a message from ${d.name}`);
+    let copied = false;
+    if (document.hasFocus() && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => { copied = true; ui.copied(); toast(`Message from ${d.name} — copied`); }).catch(() => {});
+    setTimeout(() => { if (!copied) toast(`💬 Message from ${d.name}`); }, 150);
+    showTab('now');
+  }
+
+  function inBatch(d, b) {
+    let ib = d.inBatches.get(String(b.id));
+    if (!ib) {
+      ib = { id: String(b.id), name: safeName(clean(b.name, 120) || 'Folder'), count: Math.max(1, Number(b.count) || 1), total: Number(b.total) || 0,
+             files: [], saved: 0, failed: 0, ended: false, done: false, top: null, dirs: new Map(), d };
+      ib.group = groupRow('in', ib.name, ib.count, ib.total, d.name);
+      ib.group.onCancel(() => cancelBatchIn(d, ib));
+      d.inBatches.set(ib.id, ib);
+    }
+    return ib;
+  }
   async function onFileMeta(d, m) {
     const id = String(m.id), size = Number(m.size) || 0;
     if (d.completed.has(id)) { send(d, { t: 'got', id }); return; }
@@ -807,30 +1232,47 @@
       clearTimeout(rx.expireTimer);
       d.rx = rx; rx.paused = false;
       rx.ui.el.classList.remove('paused'); rx.ui.status('Continuing…');
-      log(`Continuing ${rx.name} from ${d.name} at ${Math.round(rx.got / Math.max(size, 1) * 100)}%`);
+      if (rx.batch) rx.batch.group.paused(false);
+      log(`Continuing a file from ${d.name} at ${Math.round(rx.got / Math.max(size, 1) * 100)}%`);
       send(d, { t: 'ready', id, offset: rx.got });
       return;
     }
     if (d.rx && d.rx.id !== id) pauseIncoming(d);
-    rx = { id, name: clean(m.name || 'file', 255) || 'file', size, type: clean(m.type, 100), got: 0, d,
-           parts: [], pending: [], pendingBytes: 0, writer: null, handle: null, writeChain: Promise.resolve(), failed: false, paused: false };
+    const ib = m.batch && typeof m.batch === 'object' ? inBatch(d, m.batch) : null;
+    if (ib && ib.cancelled) { send(d, { t: 'cancel', id }); return; }
+    rx = { id, name: clean(m.name || 'file', 255) || 'file', size, type: clean(m.type, 100), got: 0, d, path: ib ? safePath(m.path) : [],
+           parts: [], pending: [], pendingBytes: 0, writer: null, handle: null, writeChain: Promise.resolve(), failed: false, paused: false,
+           batch: ib, crc: 0xFFFFFFFF };
     d.partials.set(id, rx); d.rx = rx;
-    rx.ui = xferRow('in', rx.name, size, d.name);
-    rx.ui.onCancel(() => cancelRx(d, rx, true));
+    if (ib) { rx.ui = ib.group.member(size); ib.group.paused(false); ib.group.status(`Receiving ${rx.name}…`); }
+    else { rx.ui = xferRow('in', rx.name, size, d.name); rx.ui.onCancel(() => cancelRx(d, rx, true)); }
     rx.ready = prepareRx(rx);
     send(d, { t: 'ready', id, offset: 0 });
-    updateTransfersUI(); applyKeepAwake();
+    showTab('now'); updateTransfersUI(); applyKeepAwake();
+  }
+  async function batchDir(ib, path) {
+    if (!ib.top) { ib.topName = await uniqueDirName(folderHandle, ib.name); ib.top = await folderHandle.getDirectoryHandle(ib.topName, { create: true }); }
+    let dir = ib.top, key = '';
+    const segs = path.length && path[0] === ib.name ? path.slice(1) : path;
+    for (const s of segs) {
+      key += '/' + s;
+      if (!ib.dirs.has(key)) ib.dirs.set(key, await dir.getDirectoryHandle(s, { create: true }));
+      dir = ib.dirs.get(key);
+    }
+    return dir;
   }
   async function prepareRx(rx) {
     if (settings.autoSave !== false && folderHandle && folderOk) {
       try {
-        rx.savedName = await uniqueName(folderHandle, safeName(rx.name));
-        rx.handle = await folderHandle.getFileHandle(rx.savedName, { create: true });
+        const dir = rx.batch ? await batchDir(rx.batch, rx.path) : folderHandle;
+        rx.saveDir = dir;
+        rx.savedName = await uniqueName(dir, safeName(rx.name));
+        rx.handle = await dir.getFileHandle(rx.savedName, { create: true });
         rx.writer = await rx.handle.createWritable();
         rx.inFolder = true; return;
       } catch (e) {
         log('Saving into the chosen folder failed: ' + (e.message || e));
-        if (rx.handle) { try { await folderHandle.removeEntry(rx.savedName); } catch {} }
+        if (rx.handle && rx.saveDir) { try { await rx.saveDir.removeEntry(rx.savedName); } catch {} }
         rx.handle = null; rx.writer = null; rx.inFolder = false; folderOk = false; renderFolderUI();
       }
     }
@@ -841,9 +1283,13 @@
     }
     if (!rx.writer && rx.size > MEMORY_WARN) toast('Large file: this browser keeps it in memory. Very large files may fail here.');
   }
+  // CRC-32 (needed to build .zip files for received folders)
+  const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crcUpdate(crc, buf) { const b = new Uint8Array(buf); for (let i = 0; i < b.length; i++) crc = CRC_TABLE[(crc ^ b[i]) & 0xFF] ^ (crc >>> 8); return crc >>> 0; }
   function onChunk(d, buf) {
     const rx = d.rx; if (!rx || rx.failed || rx.paused) return;
     rx.got += buf.byteLength;
+    if (rx.batch) rx.crc = crcUpdate(rx.crc, buf);
     rx.pending.push(buf); rx.pendingBytes += buf.byteLength;
     if (rx.pendingBytes >= WRITE_BATCH) flushRx(rx);
     rx.ui.progress(rx.got, rx.size);
@@ -863,44 +1309,149 @@
     const rx = d.rx; if (!rx || rx.id !== id) return;
     d.rx = null;
     await flushRx(rx); await rx.ready;
-    if (rx.failed) { d.partials.delete(id); send(d, { t: 'cancel', id }); rx.ui.finish('Could not save: ' + (rx.error && rx.error.message || 'storage error') + ' (device may be out of space)', false); discardRx(rx); updateTransfersUI(); return; }
+    const ib = rx.batch;
+    const fail = (msg) => { d.partials.delete(id); send(d, { t: 'cancel', id }); rx.ui.finish(msg, false); discardRx(rx); if (ib) { ib.failed++; checkBatch(d, ib); } updateTransfersUI(); };
+    if (rx.failed) { fail('Could not save: ' + (rx.error && rx.error.message || 'storage error') + ' (device may be out of space)'); return; }
     let file;
     try {
       if (rx.writer) { await rx.writer.close(); rx.writer = null; file = await rx.handle.getFile(); }
       else file = new Blob(rx.parts, { type: rx.type });
-    } catch (e) { d.partials.delete(id); send(d, { t: 'cancel', id }); rx.ui.finish('Could not save: ' + e.message, false); updateTransfersUI(); return; }
+    } catch (e) { fail('Could not save: ' + e.message); return; }
     if (file.size !== rx.size) {
-      log(`${rx.name}: got ${file.size} of ${rx.size} bytes — asking for it again`);
-      d.partials.delete(id); discardRx(rx); rx.ui.finish('Arrived incomplete — receiving again…', false); send(d, { t: 'bad', id }); updateTransfersUI(); return;
+      log(`A file arrived with ${file.size} of ${rx.size} bytes — asking for it again`);
+      d.partials.delete(id); discardRx(rx); rx.ui.status('Arrived incomplete — receiving again…'); send(d, { t: 'bad', id }); updateTransfersUI(); return;
     }
     d.partials.delete(id); d.completed.add(id);
     send(d, { t: 'got', id });
-    const named = new File([file], safeName(rx.name), { type: rx.type || file.type || 'application/octet-stream' });
-    const auto = settings.autoSave !== false;
-    let where = 'received', saved = false;
-    if (rx.inFolder) { where = `saved to folder "${folderHandle.name}"` + (rx.savedName !== named.name ? ` as ${rx.savedName}` : ''); saved = true; }
-    else if (auto && !isIOS) { const n = autoDownload(named); where = 'saved to Downloads' + (n !== named.name ? ` as ${n}` : ''); saved = true; }
-    else if (auto && isIOS) { addPending(named); where = 'tap “Save” at the top to keep it'; }
     rx.done = true;
-    rx.ui.finish(`From ${d.name} · ${fmtBytes(rx.size)} · ${where}`, true);
-    addSaveButtons(rx.ui, named, saved, !!rx.inFolder);
-    log(`Received ${rx.name} from ${d.name}`);
-    toast((saved ? 'Saved ' : 'Received ') + named.name);
+    if (ib) {
+      if (rx.inFolder) ib.saved++;
+      else ib.files.push({ name: [...(rx.path.length && rx.path[0] === ib.name ? rx.path.slice(1) : rx.path), safeName(rx.name)].join('/'), blob: file, size: rx.size, crc: (rx.crc ^ 0xFFFFFFFF) >>> 0 });
+      rx.ui.finish('', true);
+      checkBatch(d, ib);
+      updateTransfersUI(); applyKeepAwake();
+      return;
+    }
+    const named = new File([file], safeName(rx.name), { type: rx.type || file.type || 'application/octet-stream' });
+    const where = deliverFile(named, rx);
+    rx.ui.finish(`From ${d.name} · ${fmtBytes(rx.size)} · ${where.text}`, true);
+    addSaveButtons(rx.ui, named, where.saved, !!rx.inFolder);
+    addHistory({ dir: 'in', kind: 'file', name: named.name, size: rx.size, peer: d.name, ok: true });
+    log(`Received a file from ${d.name}`);
+    toast((where.saved ? 'Saved ' : 'Received ') + named.name);
     updateTransfersUI(); applyKeepAwake();
+  }
+  function deliverFile(named, rx) {
+    const auto = settings.autoSave !== false;
+    if (rx && rx.inFolder) return { saved: true, text: `saved to folder "${folderHandle.name}"` + (rx.savedName !== named.name ? ` as ${rx.savedName}` : '') };
+    if (auto && !isIOS) { const n = autoDownload(named); return { saved: true, text: 'saved to Downloads' + (n !== named.name ? ` as ${n}` : '') }; }
+    if (auto && isIOS) { addPending(named); return { saved: false, text: 'tap “Save” at the top to keep it' }; }
+    return { saved: false, text: 'tap Save to keep it' };
+  }
+  function onBatchEnd(d, m) {
+    const ib = d.inBatches.get(String(m.id)); if (!ib) return;
+    ib.ended = true;
+    if (m.cancelled) { cancelBatchIn(d, ib, true); return; }
+    checkBatch(d, ib);
+  }
+  function checkBatch(d, ib) {
+    if (ib.done || ib.cancelled) return;
+    const n = ib.files.length + ib.saved + ib.failed;
+    if (n < ib.count && !(ib.ended && ![...d.partials.values()].some(r => r.batch === ib))) return;
+    ib.done = true;
+    const ok = ib.failed === 0 && n >= ib.count;
+    if (ib.saved && !ib.files.length) {
+      ib.group.finish(`From ${d.name} · ${ib.saved} files · saved to folder "${folderHandle ? folderHandle.name : ''}/${ib.topName || ib.name}"`, ok);
+    } else if (ib.files.length) {
+      let zip;
+      try { zip = new File([buildZip(ib.files)], ib.name + '.zip', { type: 'application/zip' }); }
+      catch (e) { ib.group.finish('Could not build the .zip: ' + e.message, false); return; }
+      const where = deliverFile(zip, null);
+      ib.group.finish(`From ${d.name} · ${ib.files.length + ib.saved} files · ${fmtBytes(zip.size)} · ${where.text.replace('it', 'the .zip')}`, ok);
+      addSaveButtons(ib.group, zip, where.saved, false);
+      toast((where.saved ? 'Saved ' : 'Received ') + zip.name);
+    } else ib.group.finish('Nothing arrived', false);
+    addHistory({ dir: 'in', kind: 'folder', name: ib.name, size: ib.total, count: ib.count, peer: d.name, ok });
+    log(`Received a folder from ${d.name} (${n} files)`);
+    updateTransfersUI(); applyKeepAwake();
+  }
+  function cancelBatchIn(d, ib, bySender) {
+    if (ib.done) return;
+    ib.cancelled = true; ib.done = true;
+    for (const rx of [...d.partials.values()]) if (rx.batch === ib) cancelRx(d, rx, !bySender);
+    ib.files = [];
+    ib.group.finish(bySender ? 'Cancelled by ' + d.name : 'Cancelled', false);
+    updateTransfersUI(); applyKeepAwake();
+  }
+  // Store-only .zip (no compression — photos and videos are already compressed). Uses ZIP64 when needed.
+  function buildZip(files) {
+    const parts = [], central = []; let offset = 0;
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+    const used = new Set();
+    for (const f of files) {
+      let name = f.name, i = 1; while (used.has(name.toLowerCase())) { const dot = f.name.lastIndexOf('.'); name = dot > 0 ? `${f.name.slice(0, dot)} (${i})${f.name.slice(dot)}` : `${f.name} (${i})`; i++; }
+      used.add(name.toLowerCase());
+      const nameBytes = enc.encode(name);
+      const big = f.size >= 0xFFFFFFFF, farOff = offset >= 0xFFFFFFFF;
+      const lx = big ? 20 : 0;
+      const lh = new DataView(new ArrayBuffer(30 + nameBytes.length + lx));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, big ? 45 : 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+      lh.setUint16(10, dosTime, true); lh.setUint16(12, dosDate, true); lh.setUint32(14, f.crc, true);
+      lh.setUint32(18, big ? 0xFFFFFFFF : f.size, true); lh.setUint32(22, big ? 0xFFFFFFFF : f.size, true);
+      lh.setUint16(26, nameBytes.length, true); lh.setUint16(28, lx, true);
+      new Uint8Array(lh.buffer).set(nameBytes, 30);
+      if (big) { const o = 30 + nameBytes.length; lh.setUint16(o, 1, true); lh.setUint16(o + 2, 16, true); lh.setBigUint64(o + 4, BigInt(f.size), true); lh.setBigUint64(o + 12, BigInt(f.size), true); }
+      parts.push(lh.buffer, f.blob);
+      const cx = (big ? 16 : 0) + (farOff ? 8 : 0), cxl = cx ? cx + 4 : 0;
+      const ch = new DataView(new ArrayBuffer(46 + nameBytes.length + cxl));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 0x033F, true); ch.setUint16(6, big || farOff ? 45 : 20, true); ch.setUint16(8, 0x0800, true);
+      ch.setUint16(10, 0, true); ch.setUint16(12, dosTime, true); ch.setUint16(14, dosDate, true); ch.setUint32(16, f.crc, true);
+      ch.setUint32(20, big ? 0xFFFFFFFF : f.size, true); ch.setUint32(24, big ? 0xFFFFFFFF : f.size, true);
+      ch.setUint16(28, nameBytes.length, true); ch.setUint16(30, cxl, true); ch.setUint16(32, 0, true); ch.setUint16(34, 0, true); ch.setUint16(36, 0, true);
+      ch.setUint32(38, 0o100644 << 16 >>> 0, true); ch.setUint32(42, farOff ? 0xFFFFFFFF : offset, true);
+      new Uint8Array(ch.buffer).set(nameBytes, 46);
+      if (cxl) { let o = 46 + nameBytes.length; ch.setUint16(o, 1, true); ch.setUint16(o + 2, cx, true); o += 4;
+        if (big) { ch.setBigUint64(o, BigInt(f.size), true); ch.setBigUint64(o + 8, BigInt(f.size), true); o += 16; }
+        if (farOff) ch.setBigUint64(o, BigInt(offset), true); }
+      central.push(ch.buffer);
+      offset += lh.byteLength + f.size;
+    }
+    const cdSize = central.reduce((s, b) => s + b.byteLength, 0), cdOff = offset, n = files.length;
+    const z64 = n >= 0xFFFF || cdOff >= 0xFFFFFFFF || cdSize >= 0xFFFFFFFF;
+    const tail = [];
+    if (z64) {
+      const r = new DataView(new ArrayBuffer(56));
+      r.setUint32(0, 0x06064b50, true); r.setBigUint64(4, 44n, true); r.setUint16(12, 45, true); r.setUint16(14, 45, true);
+      r.setUint32(16, 0, true); r.setUint32(20, 0, true); r.setBigUint64(24, BigInt(n), true); r.setBigUint64(32, BigInt(n), true);
+      r.setBigUint64(40, BigInt(cdSize), true); r.setBigUint64(48, BigInt(cdOff), true);
+      const l = new DataView(new ArrayBuffer(20));
+      l.setUint32(0, 0x07064b50, true); l.setUint32(4, 0, true); l.setBigUint64(8, BigInt(cdOff + cdSize), true); l.setUint32(16, 1, true);
+      tail.push(r.buffer, l.buffer);
+    }
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, z64 ? 0xFFFF : n, true); e.setUint16(10, z64 ? 0xFFFF : n, true);
+    e.setUint32(12, z64 ? 0xFFFFFFFF : cdSize, true); e.setUint32(16, z64 ? 0xFFFFFFFF : cdOff, true);
+    tail.push(e.buffer);
+    return new Blob([...parts, ...central, ...tail], { type: 'application/zip' });
   }
   function pauseIncoming(d) {
     const rx = d.rx; if (!rx) return;
     d.rx = null; rx.paused = true;
     rx.ui.el.classList.add('paused');
     rx.ui.status(`Paused at ${Math.round(rx.got / Math.max(rx.size, 1) * 100)}% — will continue when ${d.name} reconnects`, true);
+    if (rx.batch) rx.batch.group.paused(true);
     clearTimeout(rx.expireTimer);
-    rx.expireTimer = setTimeout(() => { if (d.partials.get(rx.id) === rx) { d.partials.delete(rx.id); rx.ui.finish('Gave up — the other device did not come back', false); discardRx(rx); updateTransfersUI(); applyKeepAwake(); } }, PARTIAL_KEEP_MS);
+    rx.expireTimer = setTimeout(() => { if (d.partials.get(rx.id) === rx) { d.partials.delete(rx.id); rx.ui.finish('Gave up — the other device did not come back', false); discardRx(rx); if (rx.batch) { rx.batch.failed++; rx.batch.ended = true; checkBatch(d, rx.batch); } updateTransfersUI(); applyKeepAwake(); } }, PARTIAL_KEEP_MS);
   }
   function onSenderAbort(d, id) {
     const rx = d.partials.get(id); if (!rx) return;
     if (d.rx === rx) d.rx = null;
     d.partials.delete(id); clearTimeout(rx.expireTimer);
-    rx.ui.finish('Cancelled by ' + d.name, false); discardRx(rx); updateTransfersUI(); applyKeepAwake();
+    rx.ui.finish('Cancelled by ' + d.name, false); discardRx(rx);
+    if (rx.batch) { rx.batch.failed++; checkBatch(d, rx.batch); }
+    updateTransfersUI(); applyKeepAwake();
   }
   function cancelRx(d, rx, notify) {
     if (rx.done) return;
@@ -913,7 +1464,7 @@
     rx.failed = true; rx.parts = []; rx.pending = [];
     Promise.resolve(rx.ready).then(async () => {
       try { if (rx.writer) await rx.writer.abort(); } catch {}
-      try { if (rx.handle) { if (rx.inFolder) await folderHandle.removeEntry(rx.savedName); else if (opfsDir) await opfsDir.removeEntry(rx.id); } } catch {}
+      try { if (rx.handle) { if (rx.inFolder) await rx.saveDir.removeEntry(rx.savedName); else if (opfsDir) await opfsDir.removeEntry(rx.id); } } catch {}
     });
   }
 
@@ -921,30 +1472,34 @@
   //  Transfer list UI
   // =====================================================================
   const rows = new Set();
-  function xferRow(dir, name, size, peerName) {
+  function rowShell(dir, title, cls) {
     const box = $('xfers'); const empty = box.querySelector('.empty'); if (empty) empty.remove();
-    const el = document.createElement('div'); el.className = 'xfer';
+    const el = document.createElement('div'); el.className = 'xfer' + (cls ? ' ' + cls : '');
     el.innerHTML = '<div class="top"><span class="dir"></span><span class="fname"></span><button class="danger cancel">Cancel</button></div>' +
       '<div class="bar"><i></i></div><div class="small info"></div><div class="actions" hidden></div>';
     el.querySelector('.dir').textContent = dir === 'out' ? '↑' : '↓';
-    el.querySelector('.fname').textContent = name;
+    el.querySelector('.fname').textContent = title;
     box.prepend(el);
-    let start = performance.now(), base = 0, last = 0, samples = [];
+    return el;
+  }
+  function xferRow(dir, name, size, peerName, cls) {
+    const el = rowShell(dir, name, cls);
+    let start = performance.now(), last = 0, samples = [];
     const ui = {
       el, finished: false, dir,
-      status(text, keepBar) { el.querySelector('.info').textContent = text; if (!keepBar) {} },
-      restart(from) { start = performance.now(); base = from; samples = [[start, from]]; el.classList.remove('paused'); ui.progress(from, size, true); },
+      status(text) { el.querySelector('.info').textContent = text; },
+      restart(from) { start = performance.now(); samples = [[start, from]]; el.classList.remove('paused'); ui.progress(from, size, true); },
       reset() { ui.finished = false; el.classList.remove('done', 'fail', 'paused'); const a = el.querySelector('.actions'); a.innerHTML = ''; a.hidden = true;
         if (!el.querySelector('.cancel')) { const b = document.createElement('button'); b.className = 'danger cancel'; b.textContent = 'Cancel'; el.querySelector('.top').append(b); }
         el.querySelector('.bar > i').style.width = '0%'; },
       elapsed() { const s = (performance.now() - start) / 1000; return s < 1 ? 'under 1s' : fmtTime(s); },
-      progress(done, total, force) {
+      progress(done, total, force, extra) {
         const now = performance.now(); if (!force && now - last < 200 && done < total) return; last = now;
         el.classList.remove('paused');
         el.querySelector('.bar > i').style.width = (total ? Math.min(100, done / total * 100) : 100).toFixed(1) + '%';
         samples.push([now, done]); while (samples.length > 2 && now - samples[0][0] > 4000) samples.shift();
         const [t0, b0] = samples[0]; const rate = (done - b0) / Math.max((now - t0) / 1000, 0.001);
-        el.querySelector('.info').textContent = `${dir === 'out' ? 'To' : 'From'} ${peerName} · ${fmtBytes(done)} of ${fmtBytes(total)}` +
+        el.querySelector('.info').textContent = `${dir === 'out' ? 'To' : 'From'} ${peerName} · ${extra ? extra + ' · ' : ''}${fmtBytes(done)} of ${fmtBytes(total)}` +
           (rate > 0 && now - t0 > 500 ? ` · ${fmtBytes(rate)}/s` + (done < total ? ` · ${fmtTime((total - done) / rate)} left` : '') : '');
       },
       finish(text, ok) {
@@ -960,24 +1515,65 @@
     rows.add(ui);
     return ui;
   }
-  function allJobs() { const out = []; for (const d of devices.values()) out.push(...d.outbox); return out; }
+  // One row for a whole folder; each file inside reports into it.
+  function groupRow(dir, name, count, total, peerName) {
+    const ui = xferRow(dir, '📁 ' + name, total, peerName);
+    let doneFiles = 0, doneBytes = 0, cur = 0;
+    const extra = () => `${doneFiles} of ${count} files`;
+    ui.restart(0);
+    ui.paused = (on) => { ui.el.classList.toggle('paused', !!on); if (on) ui.status(`Paused at ${doneFiles} of ${count} files — continues when the devices reconnect`); };
+    ui.member = (size) => {
+      const m = { el: ui.el, finished: false,
+        status() {}, restart(from) { cur = from; ui.progress(doneBytes + cur, total, true, extra()); },
+        progress(done) { cur = done; ui.progress(doneBytes + cur, total, false, extra()); },
+        finish(text, ok) { if (m.finished) return; m.finished = true; cur = 0; if (ok) { doneFiles++; doneBytes += size; } if (!ui.finished) ui.progress(doneBytes, total, true, extra()); },
+        onCancel() {}, actions() { return ui.actions(); }, reset() { m.finished = false; }, elapsed() { return ui.elapsed(); } };
+      return m;
+    };
+    return ui;
+  }
+  const URL_RE = /\bhttps?:\/\/[^\s<>"']+/gi;
+  function linkify(el, text) {
+    let last = 0; const urls = [];
+    text.replace(URL_RE, (m, i) => { el.append(text.slice(last, i)); const a = document.createElement('a'); a.href = m; a.textContent = m; a.target = '_blank'; a.rel = 'noopener noreferrer'; el.append(a); urls.push(m); last = i + m.length; return m; });
+    el.append(text.slice(last)); return urls;
+  }
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; } catch {}
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.append(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch {} ta.remove(); return ok;
+  }
+  function textRow(dir, text, peerName) {
+    const ui = xferRow(dir, dir === 'out' ? `💬 Message to ${peerName}` : `💬 Message from ${peerName}`, 0, peerName, 'textmsg');
+    const msg = document.createElement('div'); msg.className = 'msg'; const urls = linkify(msg, text);
+    ui.el.querySelector('.bar').after(msg);
+    const a = ui.actions();
+    const cp = document.createElement('button'); cp.className = 'ghost'; cp.textContent = 'Copy';
+    cp.onclick = async () => { if (await copyText(text)) { cp.textContent = 'Copied ✓'; toast('Copied'); } else toast('Could not copy — select the text instead'); };
+    a.append(cp);
+    if (urls.length === 1 && dir === 'in') { const o = document.createElement('a'); o.className = 'btn ghost'; o.href = urls[0]; o.target = '_blank'; o.rel = 'noopener noreferrer'; o.textContent = 'Open link'; a.append(o); }
+    ui.copied = () => { cp.textContent = 'Copied ✓'; };
+    return ui;
+  }
   function activeCount() {
     let n = 0;
     for (const d of devices.values()) { n += d.outbox.filter(j => !isFinal(j)).length; n += d.partials.size; }
     return n;
   }
   function updateTransfersUI() {
-    const n = activeCount();
-    $('cancelAllBtn').hidden = n === 0;
+    const n = activeCount(), hist = !$('hist').hidden;
+    $('cancelAllBtn').hidden = n === 0 || hist;
     $('cancelAllBtn').textContent = n > 1 ? `Cancel all (${n})` : 'Cancel';
-    $('clearBtn').hidden = ![...rows].some(r => r.finished);
+    $('clearBtn').hidden = hist || ![...rows].some(r => r.finished);
+    $('clearHistBtn').hidden = !hist || !xhist.length;
   }
   async function cancelAll() {
     const n = activeCount(); if (!n) return;
-    const r = await ask({ title: 'Cancel all transfers?', text: `This stops ${n} transfer${n > 1 ? 's' : ''} (sending and receiving). Files already saved are kept.`, yes: 'Cancel all', no: 'Keep going' });
+    const r = await confirmAsk({ title: 'Cancel all transfers?', text: `This stops ${n} transfer${n > 1 ? 's' : ''} (sending and receiving). Files already saved are kept.`, yes: 'Cancel all', no: 'Keep going' });
     if (!r.ok) return;
     for (const d of devices.values()) {
       for (const j of d.outbox) if (!isFinal(j)) cancelJob(j);
+      for (const ib of d.inBatches.values()) if (!ib.done) cancelBatchIn(d, ib);
       for (const rx of [...d.partials.values()]) cancelRx(d, rx, true);
     }
     log('Cancelled all transfers'); toast('All transfers cancelled');
@@ -986,14 +1582,40 @@
   function clearFinished() {
     for (const r of [...rows]) if (r.finished) { r.el.remove(); rows.delete(r); }
     for (const d of devices.values()) d.outbox = d.outbox.filter(j => !isFinal(j));
-    if (!$('xfers').children.length) $('xfers').innerHTML = '<div class="empty">Nothing yet.</div>';
+    if (!$('xfers').children.length) $('xfers').innerHTML = '<div class="empty">Nothing yet. Sent and received files and messages show here.</div>';
     updateTransfersUI();
+  }
+  function showTab(which) {
+    const hist = which === 'hist';
+    $('tabNow').classList.toggle('on', !hist); $('tabHist').classList.toggle('on', hist);
+    $('xfers').hidden = hist; $('hist').hidden = !hist;
+    if (hist) renderHistory();
+    updateTransfersUI();
+  }
+  function renderHistory() {
+    const box = $('hist'); box.innerHTML = '';
+    if (settings.history === false) { box.innerHTML = '<div class="empty">History is turned off in Settings.</div>'; return; }
+    if (!xhist.length) { box.innerHTML = '<div class="empty">No history yet.</div>'; return; }
+    for (const h of xhist.slice(0, 200)) {
+      const el = document.createElement('div'); el.className = 'hist';
+      const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = h.kind === 'text' ? '💬' : h.kind === 'folder' ? '📁' : (h.dir === 'out' ? '↑' : '↓');
+      const b = document.createElement('div'); b.className = 'b';
+      const t = document.createElement('b'); t.textContent = h.kind === 'text' ? (h.dir === 'out' ? 'Message to ' : 'Message from ') + h.peer : h.name;
+      const s = document.createElement('div'); s.className = 'small';
+      s.textContent = (h.dir === 'out' ? (h.kind === 'text' ? '' : 'Sent to ' + h.peer + ' · ') : (h.kind === 'text' ? '' : 'From ' + h.peer + ' · ')) +
+        (h.kind === 'folder' ? h.count + ' files · ' : '') + (h.size != null && h.kind !== 'text' ? fmtBytes(h.size) + ' · ' : '') + fmtWhen(h.at) + (h.ok ? '' : ' · not completed');
+      b.append(t);
+      if (h.kind === 'text' && h.text) { const p = document.createElement('div'); p.className = 'prev'; p.textContent = h.text; b.append(p); }
+      b.append(s);
+      el.append(ic, b);
+      if (h.kind === 'text' && h.text) { const c = document.createElement('button'); c.className = 'mini ghost'; c.textContent = 'Copy'; c.onclick = async () => { if (await copyText(h.text)) toast('Copied'); }; el.append(c); }
+      box.append(el);
+    }
   }
 
   // =====================================================================
   //  Saving received files
   // =====================================================================
-  const safeName = (n) => String(n).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_').replace(/^[.\s]+/, '').trim().slice(0, 200) || 'file';
   // Android Chrome asks "Download again?" whenever a name already exists in Downloads.
   // Remember names this browser already saved and pick a fresh one instead, like "photo (1).jpg".
   function uniqueDownloadName(name) {
@@ -1020,6 +1642,13 @@
     }
     return Date.now() + '-' + name;
   }
+  async function uniqueDirName(dir, name) {
+    for (let i = 0; i < 500; i++) {
+      const n = i ? `${name} (${i})` : name;
+      try { await dir.getDirectoryHandle(n); } catch (e) { if (e.name === 'NotFoundError') return n; if (e.name !== 'TypeMismatchError') throw e; }
+    }
+    return name + ' ' + Date.now();
+  }
   function addSaveButtons(ui, file, saved, inFolder) {
     const a = ui.actions();
     const url = URL.createObjectURL(file);
@@ -1034,7 +1663,7 @@
       a.append(open);
     }
     if (navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch { return false; } })()) {
-      const sh = document.createElement('button'); sh.className = 'ghost'; sh.textContent = isIOS ? 'Save to Photos / Share' : 'Share';
+      const sh = document.createElement('button'); sh.className = 'ghost'; sh.textContent = isIOS && /^(image|video)\//.test(file.type) ? 'Save to Photos / Share' : 'Share';
       sh.onclick = async () => { try { await navigator.share({ files: [file] }); const i = pendingSave.indexOf(file); if (i >= 0) { pendingSave.splice(i, 1); renderSaveBanner(); } } catch (e) { if (e.name !== 'AbortError') toast('Sharing not available: use Save.'); } };
       a.append(sh);
     }
@@ -1078,11 +1707,6 @@
   // Desktop Chrome/Edge: optionally save straight into a folder the person chooses.
   const canPickFolder = 'showDirectoryPicker' in window && !isIOS && !isAndroid;
   let folderHandle = null, folderOk = false;
-  function idb() {
-    return new Promise((res, rej) => { const r = indexedDB.open('quickshare', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
-  }
-  async function idbGet(k) { try { const db = await idb(); return await new Promise((res) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); } catch { return undefined; } }
-  async function idbSet(k, v) { try { const db = await idb(); await new Promise((res) => { const t = db.transaction('kv', 'readwrite'); const s = t.objectStore('kv'); v === undefined ? s.delete(k) : s.put(v, k); t.oncomplete = res; t.onerror = res; }); } catch {} }
   async function loadFolder() {
     if (!canPickFolder) { renderFolderUI(); return; }
     folderHandle = (await idbGet('folder')) || null;
@@ -1101,7 +1725,7 @@
     $('folderLabel').textContent = folderHandle ? `Saving to folder: ${folderHandle.name}` + (folderOk ? '' : ' (needs your OK)') : 'Saving to: your Downloads folder';
     $('clearFolderBtn').hidden = !folderHandle;
     $('autoSaveNote').hidden = !isIOS;
-    $('autoSaveNote').textContent = 'iPhone does not let websites save to Photos by themselves. When files arrive, a “Save to Photos” button appears at the top — one tap saves them all.';
+    $('autoSaveNote').textContent = 'iPhone does not let websites save to Photos by themselves. When files arrive, a “Save to Photos” button appears at the top — one tap saves them all. Received folders arrive as a .zip (Files app opens it).';
     const needs = auto && folderHandle && !folderOk;
     $('folderBanner').hidden = !needs;
     if (needs) $('folderBannerText').textContent = `Allow QuickShare to keep saving received files to "${folderHandle.name}"`;
@@ -1138,9 +1762,9 @@
   function renderAwake() {
     const el = $('awakeNote');
     const on = !!wakeLock || awakeVideoOn;
-    if (settings.keepAwake === false && activeCount() === 0) { el.hidden = true; return; }
+    if ((settings.keepAwake === false && activeCount() === 0) || on) { el.hidden = true; return; }
     el.hidden = false;
-    el.textContent = on ? '☀️ Screen will stay on while QuickShare is open' : '☀️ Tap anywhere to keep the screen on';
+    el.textContent = '☀️ Tap anywhere to keep the screen on';
     el.classList.toggle('warn', !on);
   }
   document.addEventListener('pointerdown', () => { if (wantAwake() && !(wakeLock || awakeVideoOn)) applyKeepAwake(); }, true);
@@ -1148,261 +1772,471 @@
   // =====================================================================
   //  Nearby (same Wi-Fi) discovery
   // =====================================================================
-  // Devices behind the same router share one public IPv4 address; each hashes it into a "room" and claims one of a
-  // few slot IDs. Devices in the same room probe each other, and only list a device if WebRTC found a direct local route.
+  // Devices behind the same router share a public IPv4 address (and an IPv6 /64 network prefix). Each one hashes
+  // these into "rooms" and claims one of a few slot IDs in each. Devices in the same room probe each other, and a
+  // device is only listed after WebRTC proves a direct local route — so strangers sharing a mobile-data address are never shown.
+  // Listing a device grants nothing: pairing still needs the QR secret or a matching number confirmed on screen.
   const SLOTS = 10;
-  const nearby = new Map(); const probes = new Set();
-  let beacon = null, roomKey = null, nearbyState = 'searching', lastIpCheck = 0;
-  function publicIPv4() {
-    const test = store.get('testIp', null); if (test) return Promise.resolve(test);
+  const nearby = new Map();          // code -> { code, name, conn }
+  const unverified = new Map();      // code -> time (same internet address, but no direct local route)
+  const rooms = new Map();           // key -> { key, kind, beacon, probes:Set, state }
+  let nearbyState = 'searching', lastIpCheck = 0, myAddr = { v4: null, v6: null };
+  function expandV6(a) {
+    a = a.toLowerCase().split('%')[0];
+    if (a.includes('.')) return null;
+    const [h, t] = a.split('::'); const hs = h ? h.split(':') : [], ts = t !== undefined ? (t ? t.split(':') : []) : [];
+    const fill = t !== undefined ? Array(8 - hs.length - ts.length).fill('0') : [];
+    const all = [...hs, ...fill, ...ts]; if (all.length !== 8) return null;
+    return all.map(x => x.padStart(4, '0'));
+  }
+  const v6prefix = (a) => { const x = expandV6(a); return x ? x.slice(0, 4).join(':') : null; };
+  function publicAddrs() {
+    const test = store.get('testIp', null); if (test) return Promise.resolve({ v4: test, v6: null });
     return new Promise((resolve) => {
-      let pc, settled = false;
-      const done = (v) => { if (settled) return; settled = true; clearTimeout(t); try { pc.close(); } catch {} resolve(v); };
-      const t = setTimeout(() => done(null), 6000);
+      let pc, settled = false; const out = { v4: null, v6: null };
+      const done = () => { if (settled) return; settled = true; clearTimeout(t); try { pc.close(); } catch {} resolve(out); };
+      const t = setTimeout(done, 5000);
       try {
         pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }] });
         pc.createDataChannel('ip');
-        pc.onicecandidate = (e) => { if (!e.candidate) return done(null); const m = (e.candidate.candidate || '').match(/ (\d{1,3}(?:\.\d{1,3}){3}) \d+ typ srflx/); if (m) done(m[1]); };
-        pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => done(null));
-      } catch { done(null); }
+        pc.onicecandidate = (e) => {
+          if (!e.candidate) return done();
+          const c = e.candidate.candidate || '';
+          const m4 = c.match(/ (\d{1,3}(?:\.\d{1,3}){3}) \d+ typ srflx/); if (m4 && !out.v4) out.v4 = m4[1];
+          const m6 = c.match(/ ([0-9a-fA-F:]{6,}) \d+ typ srflx/); if (m6 && !out.v6) { const p = v6prefix(m6[1]); if (p && !/^f[cdeE]/i.test(p)) out.v6 = p; }
+          if (out.v4 && out.v6) setTimeout(done, 300);
+        };
+        pc.createOffer().then(o => pc.setLocalDescription(o)).catch(done);
+      } catch { done(); }
     });
   }
-  async function hashRoom(ip) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('quickshare-room|' + ip));
+  async function hashRoom(label) {
+    const buf = await crypto.subtle.digest('SHA-256', enc.encode('quickshare-room|' + label));
     return [...new Uint8Array(buf)].slice(0, 6).map(b => b.toString(16).padStart(2, '0')).join('');
   }
   const slotId = (key, n) => PREFIX + 'lan-' + key + '-' + n;
-  function stopNearby() { if (beacon) { try { beacon.destroy(); } catch {} } beacon = null; for (const c of probes) { try { c.close(); } catch {} } probes.clear(); nearby.clear(); }
+  function stopRoom(r) { if (r.beacon) { try { r.beacon.destroy(); } catch {} } r.beacon = null; for (const c of r.probes) { try { c.close(); } catch {} } r.probes.clear(); rooms.delete(r.key); }
+  function stopNearby() { for (const r of [...rooms.values()]) stopRoom(r); nearby.clear(); }
+  function refreshNearbyState() {
+    const rs = [...rooms.values()];
+    nearbyState = settings.discover === false ? 'off' : !rs.length ? nearbyState : rs.some(r => r.state === 'ready') ? 'ready' : rs.every(r => r.state === 'full') ? 'full' : 'searching';
+    render();
+  }
   async function startNearby(force) {
-    if (settings.discover === false) { stopNearby(); roomKey = null; setNearby('off'); return; }
-    if (!window.RTCPeerConnection || !crypto.subtle) { setNearby('unavailable'); return; }
+    if (settings.discover === false) { stopNearby(); nearbyState = 'off'; render(); return; }
+    if (!window.RTCPeerConnection || !crypto.subtle) { nearbyState = 'unavailable'; render(); return; }
     lastIpCheck = Date.now();
-    if (!beacon) setNearby('searching');
-    const ip = await publicIPv4();
-    if (!ip) { if (!beacon) setNearby('unavailable'); return; }
-    const key = await hashRoom(ip);
-    if (!force && key === roomKey && beacon && !beacon.destroyed) { if (beacon.disconnected) { try { beacon.reconnect(); } catch {} } probeAll(); return; }
-    stopNearby(); roomKey = key; setNearby('searching');
-    claimSlot(0, key);
+    if (!rooms.size) { nearbyState = 'searching'; render(); }
+    const a = await publicAddrs(); myAddr = a;
+    const want = new Map();
+    if (a.v4) want.set(await hashRoom(a.v4), 'IPv4');
+    if (a.v6) want.set(await hashRoom('v6|' + a.v6), 'IPv6');
+    if (!want.size) { if (!rooms.size) { nearbyState = 'unavailable'; render(); } return; }
+    for (const r of [...rooms.values()]) if (force || !want.has(r.key)) stopRoom(r);
+    for (const [key, kind] of want) {
+      const r = rooms.get(key);
+      if (r && r.beacon && !r.beacon.destroyed) { if (r.beacon.disconnected) { try { r.beacon.reconnect(); } catch {} } probeAll(r); continue; }
+      const room = { key, kind, beacon: null, probes: new Set(), state: 'searching' };
+      rooms.set(key, room); claimSlot(room, 0);
+    }
+    refreshNearbyState();
   }
-  function claimSlot(slot, key) {
-    if (key !== roomKey) return;
-    if (slot >= SLOTS) { setNearby('full'); return; }
-    const b = new Peer(slotId(key, slot), peerOptions());
-    b._slot = slot; beacon = b;
-    b.on('open', () => { if (beacon !== b) return; setNearby('ready'); probeAll(); });
-    b.on('connection', (c) => { if (beacon === b) watchProbe(c, false); else c.close(); });
+  function claimSlot(room, slot) {
+    if (rooms.get(room.key) !== room) return;
+    if (slot >= SLOTS) { room.state = 'full'; refreshNearbyState(); return; }
+    const b = new Peer(slotId(room.key, slot), peerOptions());
+    b._slot = slot; room.beacon = b;
+    b.on('open', () => { if (room.beacon !== b) return; b._wasOpen = true; room.state = 'ready'; refreshNearbyState(); probeAll(room); });
+    b.on('connection', (c) => { if (room.beacon === b) watchProbe(c, false, room); else c.close(); });
     b.on('error', (err) => {
-      if (beacon !== b) return;
-      if (err.type === 'unavailable-id') { if (b.disconnected && b._wasOpen) { setTimeout(() => { try { b.reconnect(); } catch {} }, 8000); return; } try { b.destroy(); } catch {} claimSlot(slot + 1, key); return; }
-      if (err.type === 'peer-unavailable') return;
+      if (room.beacon !== b) return;
+      if (err.type === 'unavailable-id') { if (b.disconnected && b._wasOpen) { setTimeout(() => { try { b.reconnect(); } catch {} }, 8000); return; } try { b.destroy(); } catch {} claimSlot(room, slot + 1); return; }
     });
-    b.on('open', () => { b._wasOpen = true; });
-    b.on('disconnected', () => setTimeout(() => { if (beacon === b && b.disconnected && !b.destroyed) { try { b.reconnect(); } catch {} } }, 3000));
+    b.on('disconnected', () => setTimeout(() => { if (room.beacon === b && b.disconnected && !b.destroyed) { try { b.reconnect(); } catch {} } }, 3000));
   }
-  function probeAll() {
-    const b = beacon; if (!b || b.disconnected || b.destroyed || !b.open) return;
-    for (let n = 0; n < SLOTS; n++) {
-      if (n === b._slot) continue;
-      const id = slotId(roomKey, n);
-      if ([...probes].some(c => c.peer === id)) continue;
-      watchProbe(b.connect(id, { reliable: true, serialization: 'raw' }), true);
+  function probeAll(room) {
+    for (const r of room ? [room] : rooms.values()) {
+      const b = r.beacon; if (!b || b.disconnected || b.destroyed || !b.open) continue;
+      for (let n = 0; n < SLOTS; n++) {
+        if (n === b._slot) continue;
+        const id = slotId(r.key, n);
+        if ([...r.probes].some(c => c.peer === id)) continue;
+        watchProbe(b.connect(id, { reliable: true, serialization: 'raw' }), true, r);
+      }
     }
   }
-  async function isLocalRoute(c) {
-    const pc = c.peerConnection; if (!pc) return false;
-    const priv = (a) => !a || /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|f[cd]|fe80|.*\.local$)/i.test(a);
-    for (let i = 0; i < 15; i++) {
-      try {
-        const stats = await pc.getStats(); const byId = new Map(); let pair = null;
-        stats.forEach(r => byId.set(r.id, r));
-        stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = byId.get(r.selectedCandidatePairId) || pair; });
-        if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && (r.selected || (r.nominated && r.state === 'succeeded'))) pair = r; });
-        if (pair) { const l = byId.get(pair.localCandidateId), r = byId.get(pair.remoteCandidateId);
-          if (l && r) return l.candidateType === 'host' && (r.candidateType === 'host' || (r.candidateType === 'prflx' && priv(r.address || r.ip))); }
-      } catch {}
-      await sleep(300);
+  const isPrivate = (a) => !a || /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.|f[cd]|fe80|.*\.local$)/i.test(a);
+  function isLocalPair(l, r) {
+    if (!l || !r) return false;
+    if (l.candidateType !== 'host') return false;
+    if (r.candidateType === 'host') return true;
+    const addr = r.address || r.ip || '';
+    if (r.candidateType === 'prflx') {
+      if (/^100\./.test(addr)) return false; // carrier-grade NAT range is not a home network
+      if (isPrivate(addr)) return true;
+      if (myAddr.v6 && addr.includes(':') && v6prefix(addr) === myAddr.v6) return true;
     }
     return false;
   }
-  function watchProbe(c, mine) {
-    probes.add(c);
-    const timer = setTimeout(() => { if (!c.open) { try { c.close(); } catch {} probes.delete(c); } }, 15000);
-    let verified = false, info = null;
+  async function probeRoute(c) {
+    const pc = c.peerConnection; if (!pc) return { ok: false, why: 'no-pc' };
+    let last = 'none';
+    for (let i = 0; i < 28; i++) {
+      try {
+        const s = await selectedPair(pc);
+        if (s && s.l && s.r) { last = `${s.l.candidateType}/${s.r.candidateType}`; if (isLocalPair(s.l, s.r)) return { ok: true, why: last }; if (i > 8) return { ok: false, why: last }; }
+      } catch {}
+      await sleep(300);
+    }
+    return { ok: false, why: last };
+  }
+  function watchProbe(c, mine, room) {
+    room.probes.add(c);
+    const timer = setTimeout(() => { if (!c.open) { try { c.close(); } catch {} room.probes.delete(c); } }, 15000);
+    let verified = false, info = null, route = '';
     const accept = () => {
-      if (!verified || !info || !c.open) return;
+      if (!info) return;
+      if (!verified) { const prev = unverified.get(info.code); unverified.set(info.code, Date.now()); if (!prev || Date.now() - prev > 180000) log(`Nearby: a device on the same internet address was not confirmed as local (route ${route})`); render(); return; }
+      if (!c.open) return;
+      unverified.delete(info.code);
       const code = info.code, cur = nearby.get(code);
       if (cur && cur.conn !== c && cur.conn.open) {
         const keepThis = mine ? myCode < code : code < myCode;
         if (!keepThis) { c.close(); return; }
         try { cur.conn.close(); } catch {}
       }
-      nearby.set(code, { code, name: info.name, conn: c });
+      nearby.set(code, { code, name: info.name, platform: info.platform, conn: c });
       const d = devices.get(code); if (d) { d.nearby = true; if (wantsConnection(d) && !d.ready && !(d.conn && !d.conn._dead)) scheduleRetry(d, myCode < code ? 200 : 3000); }
       render();
     };
     c.on('open', async () => {
       clearTimeout(timer);
-      verified = await isLocalRoute(c);
-      if (!verified || !c.open) { try { c.close(); } catch {} return; }
-      c.send(JSON.stringify({ t: 'hi', name: settings.name, code: myCode }));
-      accept();
+      const r = await probeRoute(c); verified = r.ok; route = r.why;
+      if (!c.open) return;
+      c.send(JSON.stringify({ t: 'hi', v: 3, name: settings.name, code: myCode, platform: myPlatform, local: verified }));
+      if (info) accept();
+      if (!verified) setTimeout(() => { try { c.close(); } catch {} }, 4000);
     });
     c.on('data', (d) => {
       if (typeof d !== 'string') return;
       let m; try { m = JSON.parse(d); } catch { return; }
       if (m.t !== 'hi' || !validCode(m.code || '') || m.code === myCode) return;
-      info = { code: m.code, name: clean(m.name) || m.code };
+      const first = !info;
+      info = { code: m.code, name: clean(m.name) || m.code, platform: clean(m.platform, 12) };
       const cur = nearby.get(info.code); if (cur && cur.conn === c) { cur.name = info.name; render(); return; }
-      accept();
+      if (first && route) accept();
     });
     const gone = () => {
-      clearTimeout(timer); probes.delete(c);
+      clearTimeout(timer); room.probes.delete(c);
       for (const [code, n] of nearby) if (n.conn === c) { nearby.delete(code); const d = devices.get(code); if (d) d.nearby = false; }
       render();
     };
     c.on('close', gone); c.on('error', gone);
   }
-  function setNearby(state) { nearbyState = state; render(); }
   const recheckNearby = () => { if (Date.now() - lastIpCheck > 8000) startNearby(false); else probeAll(); };
   if (navigator.connection && navigator.connection.addEventListener) navigator.connection.addEventListener('change', () => setTimeout(() => { startNearby(false); kickPeer(); }, 1500));
   setInterval(() => { if (document.visibilityState !== 'visible') return; if (Date.now() - lastIpCheck > 60000) startNearby(false); else probeAll(); }, 20000);
+  const recentUnverified = () => [...unverified.entries()].filter(([code, t]) => Date.now() - t < 180000 && !nearby.has(code) && !(devices.get(code) && devices.get(code).ready)).length;
+  const networkIds = () => [...rooms.values()].map(r => r.key.slice(0, 4) + ' (' + r.kind + ')').join(' · ') || '—';
 
   // =====================================================================
   //  Device list UI
   // =====================================================================
   function deviceStatus(d) {
     const waiting = d.outbox.filter(j => !isFinal(j)).length;
-    const w = waiting ? ` · ${waiting} file${waiting > 1 ? 's' : ''} waiting` : '';
+    const w = waiting ? ` · ${waiting} waiting to send` : '';
     if (d.ready) {
       const route = d.route === 'wifi' ? 'same Wi-Fi' : d.route === 'relay' ? 'via relay' : d.route === 'internet' ? 'over internet' : '';
-      return { text: 'Connected' + (route ? ' · ' + route : '') + (d.rtt != null ? ` · ${d.rtt} ms` : ''), cls: 'ok' };
+      return { text: 'Connected' + (route ? ' · ' + route : '') + w, cls: 'ok' };
     }
-    if (d.asking) return { text: 'Asking to connect — answer the popup', cls: 'warn' };
-    if (d.conn && !d.conn._dead) return { text: (isAllowed(d) ? 'Connecting…' : 'Waiting for “Allow” on that device…') + w, cls: '' };
-    if (d.state === 'reconnecting' || (wantsConnection(d) && d.retryTimer)) return { text: (d.unreachable ? 'Not open right now — will connect when it is' : 'Reconnecting…') + w, cls: 'warn' };
-    if (d.paused) return { text: 'Disconnected' + w, cls: '' };
-    if (!isAllowed(d)) return { text: 'Needs approval to connect again' + w, cls: '' };
-    return { text: 'Offline' + w, cls: '' };
+    if (d.keyMismatch) return { text: 'Security key changed — tap Review', cls: 'warn' };
+    if (d.oldApp) return { text: 'Old version there — reopen QuickShare on it to update', cls: 'warn' };
+    if (d.legacy && !d.paired) return { text: 'Pair once more (security upgrade)', cls: 'warn' };
+    if (d.conn && !d.conn._dead) return { text: (d.paired ? 'Connecting…' : 'Pairing…') + w, cls: '' };
+    if (!d.paired) return { text: 'Not paired', cls: '' };
+    if (d.paused) return { text: 'Disconnected — tap Connect' + w, cls: '' };
+    if (d.unreachable || d.everConnected === false) return { text: 'Not open right now — connects when it is' + w, cls: 'off' };
+    return { text: 'Reconnecting…' + w, cls: 'warn' };
+  }
+  function avatar(platform, dotCls) {
+    const av = document.createElement('div'); av.className = 'av'; av.textContent = ICONS[platform] || '📟';
+    if (dotCls != null) { const dot = document.createElement('span'); dot.className = 'dot' + dotCls; av.append(dot); }
+    return av;
   }
   function render() {
     const box = $('devices'); box.innerHTML = '';
-    const list = [...devices.values()].filter(d => d.remembered || d.conn || d.outbox.length)
+    const list = [...devices.values()].filter(d => d.paired || d.legacy || d.keyMismatch)
       .sort((a, b) => (b.ready - a.ready) || (b.lastSeen - a.lastSeen));
-    if (!list.length) box.innerHTML = '<div class="empty">No devices yet. Open QuickShare on another device and scan this QR code, or pick one under “Nearby”.</div>';
+    if (!list.length) {
+      const w = document.createElement('div'); w.className = 'welcome';
+      w.innerHTML = '<p>No paired devices yet. Pair once — after that your devices connect by themselves, on any network.</p>';
+      const b = document.createElement('button'); b.textContent = '＋ Add your first device'; b.onclick = openAdd; w.append(b);
+      box.append(w);
+    }
     for (const d of list) {
-      const row = document.createElement('div'); row.className = 'device';
-      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = d.selected; cb.setAttribute('aria-label', 'Send to ' + d.name);
-      cb.onchange = () => { d.selected = cb.checked; updateSend(); };
+      const row = document.createElement('div'); row.className = 'device' + (d.keyMismatch ? ' warnrow' : '');
+      const st = deviceStatus(d);
+      row.append(avatar(d.platform, d.ready ? ' on' : st.cls === 'warn' ? '' : ' off'));
       const nm = document.createElement('div'); nm.className = 'name';
       const b = document.createElement('b'); b.textContent = d.name;
-      const s = document.createElement('div'); s.className = 'small';
-      const st = deviceStatus(d);
-      const dot = document.createElement('span'); dot.className = 'dot' + (d.ready ? ' on' : st.cls === 'warn' ? '' : ' off');
-      const t = document.createElement('span'); t.textContent = st.text; t.prepend(dot); s.append(t);
-      if (d.trusted) { const bd = document.createElement('span'); bd.className = 'badge'; bd.textContent = 'Always allowed'; s.append(bd); }
-      nm.append(b, s);
-      row.append(cb, nm);
-      if (d.ready) {
-        const sendBtn = document.createElement('button'); sendBtn.className = 'mini'; sendBtn.textContent = 'Send';
-        sendBtn.onclick = () => { pendingTarget = d; $('fileInput').click(); };
-        row.append(sendBtn);
-      } else if (!(d.conn && !d.conn._dead)) {
-        const c = document.createElement('button'); c.className = 'mini ghost'; c.textContent = 'Connect';
-        c.onclick = () => connectTo(d.code, true);
-        row.append(c);
-      }
-      const x = document.createElement('button'); x.className = 'icon'; x.textContent = '✕'; x.setAttribute('aria-label', 'Disconnect or forget ' + d.name);
-      x.onclick = () => deviceMenu(d);
-      row.append(x);
+      const s = document.createElement('div'); s.className = 'small'; s.textContent = st.text;
+      nm.append(b, s); row.append(nm);
+      if (d.keyMismatch) { const r = document.createElement('button'); r.className = 'mini'; r.textContent = 'Review'; r.onclick = () => reviewMismatch(d); row.append(r); }
+      else if (d.legacy && !d.paired) { const r = document.createElement('button'); r.className = 'mini'; r.textContent = 'Pair'; r.onclick = () => connectTo(d.code, { manual: true, pair: true }); row.append(r); }
+      else if (d.ready) { const sb = document.createElement('button'); sb.className = 'mini'; sb.textContent = 'Send'; sb.onclick = () => openSendTo(d); row.append(sb); }
+      else if (!(d.conn && !d.conn._dead)) { const c = document.createElement('button'); c.className = 'mini ghost'; c.textContent = 'Connect'; c.onclick = () => connectTo(d.code, { manual: true }); row.append(c); }
+      const x = document.createElement('button'); x.className = 'icon'; x.textContent = '⋯'; x.setAttribute('aria-label', 'Options for ' + d.name);
+      x.onclick = () => deviceMenu(d); row.append(x);
       box.append(row);
     }
-    $('devCount').textContent = list.length ? `${list.filter(d => d.ready).length} of ${list.length} connected` : '';
     renderNearby();
-    updateSend();
+    renderChips();
   }
-  async function deviceMenu(d) {
-    const r = await ask({ title: d.name, text: d.ready ? 'Disconnect stops automatic reconnecting until you tap Connect. Forget also removes it from your devices.' :
-      'Forget removes this device. It will need approval to connect again.', check: d.ready ? 'Also forget this device' : null, yes: d.ready ? 'Disconnect' : 'Forget', no: 'Cancel' });
-    if (!r.ok) return;
-    const forget = !d.ready || r.checked;
-    d.paused = true; clearTimeout(d.retryTimer); d.retryTimer = null;
-    if (d.conn) { send(d, { t: 'bye' }); const c = d.conn; setTimeout(() => { try { c.close(); } catch {} }, 200); }
-    for (const j of d.outbox) if (!isFinal(j)) cancelJob(j);
-    if (forget) { d.remembered = false; d.trusted = false; d.allowedUntil = 0; saveDevices(); if (!d.conn) devices.delete(d.code); log(`Forgot ${d.name}`); }
-    else log(`Disconnected from ${d.name}`);
-    render();
-  }
-  function renderNearby() {
-    const box = $('nearby'); box.innerHTML = '';
-    const list = [...nearby.values()].filter(n => { const d = devices.get(n.code); return !(d && d.remembered); });
-    const known = [...nearby.values()].length - list.length;
-    if (!list.length) {
-      const msg = { searching: 'Looking for devices on this Wi-Fi…',
-        ready: known ? 'Your devices on this Wi-Fi are listed above.' : 'No other devices found yet. Open QuickShare on another device connected to the same Wi-Fi.',
-        unavailable: "Can't check for nearby devices right now. Use a code or QR instead.",
-        full: 'Too many devices on this network to list. Use a code instead.', off: 'Turned off in Settings.' }[nearbyState] || '';
-      const d = document.createElement('div'); d.className = 'empty'; d.textContent = msg; box.append(d); return;
-    }
+  function nearbyRows(box) {
+    const list = [...nearby.values()].filter(n => { const d = devices.get(n.code); return !(d && d.paired); });
+    box.innerHTML = '';
     for (const n of list) {
       const row = document.createElement('div'); row.className = 'device';
-      const ic = document.createElement('span'); ic.textContent = '📶'; ic.setAttribute('aria-hidden', 'true');
+      row.append(avatar(n.platform, null));
       const nm = document.createElement('div'); nm.className = 'name';
       const b = document.createElement('b'); b.textContent = n.name;
-      const s = document.createElement('div'); s.className = 'small'; s.textContent = 'On this Wi-Fi';
+      const s = document.createElement('div'); s.className = 'small'; s.textContent = 'On this Wi-Fi · not paired';
       nm.append(b, s);
       const d = devices.get(n.code); const trying = d && d.conn && !d.conn._dead;
-      const btn = document.createElement('button'); btn.className = 'mini' + (trying ? ' ghost' : ''); btn.textContent = trying ? 'Waiting…' : 'Connect'; btn.disabled = !!trying;
-      btn.onclick = () => { const dd = connectTo(n.code, true); if (dd && dd.name === dd.code) dd.name = n.name; render(); };
-      row.append(ic, nm, btn); box.append(row);
+      const btn = document.createElement('button'); btn.className = 'mini' + (trying ? ' ghost' : ''); btn.textContent = trying ? 'Pairing…' : 'Pair'; btn.disabled = !!trying;
+      btn.onclick = () => { const dd = connectTo(n.code, { manual: true, pair: true }); if (dd && dd.name === dd.code) dd.name = n.name; render(); };
+      row.append(nm, btn); box.append(row);
     }
+    return list.length;
   }
-  let pendingTarget = null;
-  function targets() { return [...devices.values()].filter(d => d.selected && (d.ready || wantsConnection(d))); }
-  function updateSend() {
-    const ts = targets(), ready = ts.filter(d => d.ready).length;
-    $('pickBtn').disabled = ts.length === 0;
-    $('sendHint').textContent = ts.length === 0 ? 'Connect a device first.' :
-      `Files will go to ${ts.map(d => d.name).join(', ')}` + (ready < ts.length ? ' (sent automatically when offline devices reconnect)' : '') + '.';
+  function renderNearby() {
+    const n = nearbyRows($('nearby'));
+    $('nearbyBox').hidden = !n;
+    if ($('addDlg').open) { const m = nearbyRows($('addNearby')); $('addNearbyBox').hidden = !m; }
+    const un = recentUnverified();
+    const note = $('nearbyNote');
+    let msg = '';
+    if (nearbyState === 'off') msg = '';
+    else if (un && !n) msg = `${un} device${un > 1 ? 's' : ''} on your internet connection couldn't be confirmed as being on this Wi-Fi, so ${un > 1 ? 'they are' : 'it is'} not listed.` +
+      (isMac ? ' On a Mac, allow your browser in System Settings → Privacy & Security → Local Network.' : '') + ' If it’s yours, pair with Scan or its code.';
+    else if (nearbyState === 'searching' && !n && !devices.size) msg = 'Looking for devices on this Wi-Fi…';
+    note.textContent = msg; note.hidden = !msg;
+  }
+  function renderChips() {
+    const box = $('chips'); box.innerHTML = '';
+    const list = [...devices.values()].filter(d => d.paired).sort((a, b) => (b.ready - a.ready) || (b.lastSeen - a.lastSeen));
+    for (const d of list) {
+      const c = document.createElement('button'); c.className = 'chip' + (d.selected ? ' on' : '');
+      const dot = document.createElement('span'); dot.className = 'dot' + (d.ready ? ' on' : ' off');
+      c.append(dot, ' ' + d.name + (d.selected ? ' ✓' : ''));
+      c.onclick = () => { d.selected = !d.selected; saveDevices(); renderChips(); };
+      box.append(c);
+    }
+    box.hidden = list.length < 2;
+    const ts = targets();
+    const none = !list.length;
+    for (const id of ['sendFilesBtn', 'sendFolderBtn', 'sendTextBtn']) $(id).disabled = none || !ts.length;
+    $('sendCard').style.opacity = none ? '.6' : '';
+    const ready = ts.filter(d => d.ready).length;
+    $('sendTo').textContent = list.length === 1 ? 'to ' + list[0].name : '';
+    $('sendHint').textContent = none ? 'Pair a device first (＋ Add device).' : !ts.length ? 'Tap a device above to choose where to send.' :
+      ready < ts.length ? `${ts.filter(d => !d.ready).map(d => d.name).join(', ')} ${ts.length - ready > 1 ? 'are' : 'is'} offline — files wait and go automatically when it opens QuickShare.` : '';
+  }
+  function targets() { return [...devices.values()].filter(d => d.paired && d.selected && !d.keyMismatch); }
+  async function deviceMenu(d) {
+    const r = await confirmAsk({ title: d.name, text: (d.ready ? 'Connected securely. ' : '') + `Code ${d.code}. ` +
+      'Remove unpairs it on both devices — you would need to pair again to send files.', check: d.ready ? null : null,
+      yes: 'Remove device', no: 'Close', extra: d.ready ? 'Disconnect for now' : null });
+    if (r.extra) { d.paused = true; clearTimeout(d.retryTimer); send(d, { t: 'bye' }); const c = d.conn; setTimeout(() => { try { c && c.close(); } catch {} }, 200); log(`Disconnected from ${d.name}`); render(); return; }
+    if (!r.ok) return;
+    forgetDevice(d);
+  }
+  function forgetDevice(d) {
+    d.paused = true; clearTimeout(d.retryTimer); d.retryTimer = null;
+    if (d.conn) { send(d, { t: 'unpair' }); const c = d.conn; setTimeout(() => { try { c.close(); } catch {} }, 300); }
+    for (const j of d.outbox) if (!isFinal(j)) cancelJob(j);
+    d.paired = false; d.pub = null; d.legacy = false; d.keyMismatch = false; d.wantPair = false;
+    saveDevices(); if (!d.conn) devices.delete(d.code);
+    log(`Removed ${d.name}`); render();
+  }
+  async function reviewMismatch(d) {
+    const r = await confirmAsk({ title: '⚠️ Security key changed', text: `QuickShare on “${d.name}” (code ${d.code}) now has a different security key. This happens if QuickShare was reset or reinstalled there — or if another device is pretending to be it. Nothing was sent to it.`,
+      note: 'If you reset it yourself, pair again and compare the number on both screens.', yes: 'Pair again', no: 'Not now', extra: 'Remove device' });
+    if (r.extra) { forgetDevice(d); return; }
+    if (!r.ok) return;
+    d.keyMismatch = false; d.pub = null; d.paired = false; saveDevices();
+    connectTo(d.code, { manual: true, pair: true });
   }
 
   // =====================================================================
   //  Dialogs
   // =====================================================================
   const askQueue = [];
-  function ask(opts) { return new Promise((resolve) => { askQueue.push({ opts, resolve }); if (askQueue.length === 1) showAsk(); }); }
+  function ask(opts) {
+    let resolveFn; const promise = new Promise(r => { resolveFn = r; });
+    const item = { opts, resolve: resolveFn, cancelled: false };
+    askQueue.push(item); if (askQueue.length === 1) showAsk();
+    return { promise, cancel() { item.cancelled = true; if (askQueue[0] === item) { if ($('askDlg').open) $('askDlg').close(); } else { const i = askQueue.indexOf(item); if (i >= 0) askQueue.splice(i, 1); item.resolve({ ok: false }); } } };
+  }
+  const confirmAsk = (o) => ask(o).promise;
   function showAsk() {
     const item = askQueue[0]; if (!item) return;
     const o = item.opts;
     $('askTitle').textContent = o.title || ''; $('askText').textContent = o.text || '';
+    $('askSas').hidden = !o.sas; $('askSas').textContent = o.sas || '';
+    $('askNote').hidden = !o.note; $('askNote').textContent = o.note || '';
     $('askCheckRow').hidden = !o.check; $('askCheckText').textContent = o.check || ''; $('askCheck').checked = false;
     $('askYes').textContent = o.yes || 'OK'; $('askNo').textContent = o.no || 'Cancel';
+    let ex = $('askExtra'); if (ex) ex.remove();
     const dlg = $('askDlg');
-    const done = (ok) => { $('askYes').onclick = $('askNo').onclick = null; dlg.onclose = null; const checked = $('askCheck').checked; if (dlg.open) dlg.close();
-      askQueue.shift(); item.resolve({ ok, checked }); setTimeout(showAsk, 50); };
+    const done = (ok, extra) => { $('askYes').onclick = $('askNo').onclick = null; dlg.onclose = null; const checked = $('askCheck').checked; if (dlg.open) dlg.close();
+      askQueue.shift(); item.resolve({ ok, checked, extra: !!extra }); setTimeout(showAsk, 50); };
+    if (o.extra) { ex = document.createElement('button'); ex.id = 'askExtra'; ex.className = 'plain'; ex.style.cssText = 'width:100%;margin-top:8px'; ex.textContent = o.extra; ex.onclick = () => done(false, true); dlg.querySelector('.inner').append(ex); }
     $('askYes').onclick = () => done(true); $('askNo').onclick = () => done(false);
     dlg.onclose = () => { if (askQueue[0] === item) done(false); };
     dlg.showModal();
   }
-  function pickDevice(files) {
-    const list = [...devices.values()].filter(d => d.ready || wantsConnection(d)).sort((a, b) => b.ready - a.ready);
-    $('pickTitle').textContent = `Send ${files.length} file${files.length > 1 ? 's' : ''} to…`;
-    $('pickText').textContent = list.length ? '' : 'No devices yet. Connect a device first (scan its QR code), then share again.';
+  // Pairing progress on the device that started it.
+  let pairUi = null;
+  function showPairWaiting(d, sas, conn) {
+    pairUi = { d, conn: conn || null };
+    $('pairYes').hidden = !conn;
+    $('pairTitle').textContent = `Pairing with ${d.name === d.code ? 'code ' + d.code : d.name}…`;
+    $('pairText').textContent = d.pendingToken ? 'Using the QR code — this only takes a moment.' : sas ? `Check that ${d.name} shows the same number, then tap “Numbers match” here and “Pair” there:` : 'Connecting to the other device…';
+    $('pairSas').hidden = !sas || !!d.pendingToken; $('pairSas').textContent = sas || '';
+    $('pairNote').textContent = sas && !d.pendingToken ? 'Different number? Tap Cancel — something is in between your devices.' : 'Keep QuickShare open on the other device.';
+    if (sas) $('pairSas').hidden = false;
+    $('pairCancel').textContent = 'Cancel';
+    if ($('addDlg').open) $('addDlg').close();
+    if (!$('pairDlg').open) $('pairDlg').showModal();
+  }
+  function pairUiDone(d) {
+    if (!pairUi || pairUi.d !== d) return;
+    pairUi = null;
+    $('pairTitle').textContent = '✅ Paired with ' + d.name;
+    $('pairText').textContent = 'Your devices will now find each other by themselves, on any network. You can send files, folders and text.';
+    $('pairSas').hidden = true; $('pairNote').textContent = ''; $('pairYes').hidden = true;
+    $('pairCancel').textContent = 'Done';
+    setTimeout(() => { if (!pairUi && $('pairDlg').open && $('pairCancel').textContent === 'Done') $('pairDlg').close(); }, 2500);
+  }
+  function pairUiFail(d, msg) {
+    if (!pairUi || pairUi.d !== d) return;
+    pairUi = null;
+    $('pairTitle').textContent = 'Not paired';
+    $('pairText').textContent = msg || 'The security check failed, so the devices were not connected.';
+    $('pairSas').hidden = true; $('pairNote').textContent = ''; $('pairYes').hidden = true;
+    $('pairCancel').textContent = 'Close';
+  }
+  $('pairYes').onclick = () => {
+    if (!pairUi || !pairUi.conn) return;
+    const { d, conn } = pairUi; const hs = conn._hs; if (!hs) return;
+    hs.userOk = true; $('pairYes').hidden = true;
+    $('pairNote').textContent = hs.gotPaired ? '' : `Now tap “Pair” on ${d.name}.`;
+    finishInitiator(d, conn);
+  };
+  $('pairCancel').onclick = () => {
+    if (pairUi) { const d = pairUi.d; pairUi = null; d.wantPair = false; d.pendingToken = null; if (d.conn && !d.ready) { sendc(d.conn, { t: 'reject' }); dropConn(d, d.conn, 'cancelled'); } if (!isListed(d)) devices.delete(d.code); render(); }
+    $('pairDlg').close();
+  };
+  function pickDevice(files, folderName, text) {
+    const list = [...devices.values()].filter(d => d.paired && !d.keyMismatch).sort((a, b) => b.ready - a.ready);
+    const what = text != null ? 'text' : folderName ? `folder “${folderName}”` : `${files.length} file${files.length > 1 ? 's' : ''}`;
+    $('pickTitle').textContent = `Send ${what} to…`;
+    $('pickText').textContent = list.length ? '' : 'No paired devices yet. Pair a device first (＋ Add device), then share again.';
     const box = $('pickList'); box.innerHTML = '';
+    const go = (ts) => { $('pickDlg').close(); if (text != null) queueText(text, ts); else queueFiles(files, ts, folderName); };
     for (const d of list) {
       const b = document.createElement('button'); b.className = d.ready ? '' : 'ghost';
       const a = document.createElement('span'); a.textContent = d.name;
       const s = document.createElement('span'); s.className = 'badge' + (d.ready ? ' ok' : ' warn'); s.textContent = d.ready ? 'Connected' : 'Sends when online';
-      b.append(a, s);
-      b.onclick = () => { $('pickDlg').close(); queueFiles(files, [d]); };
-      box.append(b);
+      b.append(a, s); b.onclick = () => go([d]); box.append(b);
     }
-    if (list.length > 1) {
-      const all = document.createElement('button'); all.className = 'ghost'; all.textContent = 'All of them';
-      all.onclick = () => { $('pickDlg').close(); queueFiles(files, list); };
-      box.append(all);
-    }
+    if (list.length > 1) { const all = document.createElement('button'); all.className = 'ghost'; all.textContent = 'All of them'; all.onclick = () => go(list); box.append(all); }
     $('pickDlg').showModal();
+  }
+  // Send menu for one device
+  let pendingTargets = null;
+  function openSendTo(d) {
+    const list = $('pickList'); list.innerHTML = '';
+    $('pickTitle').textContent = `Send to ${d.name}`; $('pickText').textContent = '';
+    const opt = (label, fn) => { const b = document.createElement('button'); b.className = 'ghost'; b.textContent = label; b.onclick = () => { $('pickDlg').close(); fn(); }; list.append(b); };
+    opt('📄 Files & photos', () => { pendingTargets = [d]; $('fileInput').click(); });
+    if (canSendFolder) opt('📁 A folder', () => { pendingTargets = [d]; $('folderInput').click(); });
+    opt('💬 Text / link', () => openText([d]));
+    $('pickDlg').showModal();
+  }
+  // ---- text ----
+  let textTargets = null;
+  function openText(ts, prefill) {
+    textTargets = ts || targets();
+    $('textTo').textContent = textTargets.length ? 'To ' + textTargets.map(d => d.name).join(', ') : '';
+    $('textInput').value = prefill || '';
+    $('pasteBtn').hidden = !(navigator.clipboard && navigator.clipboard.readText);
+    $('textDlg').showModal();
+    setTimeout(() => $('textInput').focus(), 50);
+  }
+  $('textForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const t = $('textInput').value; if (!t.trim()) { toast('Type or paste something first.'); return; }
+    $('textDlg').close();
+    if (textTargets && textTargets.length) queueText(t, textTargets); else pickDevice(null, null, t);
+  });
+  $('textCancel').onclick = () => $('textDlg').close();
+  $('pasteBtn').onclick = async () => { try { const t = await navigator.clipboard.readText(); if (t) $('textInput').value = t; else toast('Clipboard is empty'); } catch { toast('Allow clipboard access, or long-press the box and choose Paste.'); } };
+
+  // ---- add device ----
+  function openAdd() { $('addDlg').showModal(); renderMe(); renderNearby(); }
+  $('addClose').onclick = () => $('addDlg').close();
+  $('addDlg').addEventListener('close', () => { $('qr').innerHTML = ''; });
+
+  // ---- QR scanner (camera) ----
+  let scanStream = null, scanTimer = null, jsqrLoad = null;
+  const loadJsQR = () => jsqrLoad || (jsqrLoad = new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'lib/jsqr.min.js'; s.onload = () => res(window.jsQR); s.onerror = () => { jsqrLoad = null; rej(new Error('load')); }; document.head.append(s); }));
+  async function openScanner() {
+    if ($('addDlg').open) $('addDlg').close();
+    $('scanText').textContent = 'Point the camera at the QR code shown in QuickShare on the other device.';
+    $('scanDlg').showModal();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $('scanText').textContent = 'This browser can’t use the camera. Type the other device’s 6-letter code instead (＋ Add device).'; return; }
+    try {
+      scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    } catch (e) {
+      $('scanText').textContent = e && e.name === 'NotAllowedError' ? 'Camera access was blocked. Allow the camera for QuickShare in your browser/phone settings, or type the code instead.' : 'No camera found. Type the other device’s 6-letter code instead, or let the other device scan this one.';
+      return;
+    }
+    if (!$('scanDlg').open) { stopScanner(); return; }
+    const v = $('scanVideo'); v.srcObject = scanStream; v.setAttribute('playsinline', ''); try { await v.play(); } catch {}
+    let detector = null;
+    try { if ('BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code')) detector = new BarcodeDetector({ formats: ['qr_code'] }); } catch {}
+    let jsqr = null; if (!detector) { try { jsqr = await loadJsQR(); } catch { $('scanText').textContent = 'Could not load the scanner. Check your internet and try again.'; return; } }
+    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const tick = async () => {
+      if (!scanStream) return;
+      try {
+        if (v.readyState >= 2 && v.videoWidth) {
+          let text = null;
+          if (detector) { const r = await detector.detect(v); if (r && r[0]) text = r[0].rawValue; }
+          else { const w = 640, h = Math.round(640 * v.videoHeight / v.videoWidth); canvas.width = w; canvas.height = h; ctx.drawImage(v, 0, 0, w, h);
+            const img = ctx.getImageData(0, 0, w, h); const r = jsqr(img.data, w, h, { inversionAttempts: 'dontInvert' }); if (r) text = r.data; }
+          if (text) {
+            const inv = parseInvite(text);
+            if (inv) { stopScanner(); $('scanDlg').close(); log('Scanned a QuickShare QR code'); startPairFromInvite(inv); return; }
+            $('scanText').textContent = 'That QR code isn’t a QuickShare code. Open ＋ Add device on the other device and scan its code.';
+          }
+        }
+      } catch {}
+      scanTimer = setTimeout(tick, 150);
+    };
+    tick();
+  }
+  function stopScanner() { clearTimeout(scanTimer); if (scanStream) { for (const t of scanStream.getTracks()) t.stop(); } scanStream = null; $('scanVideo').srcObject = null; }
+  $('scanBtn').onclick = openScanner;
+  $('scanCancel').onclick = () => { stopScanner(); $('scanDlg').close(); };
+  $('scanDlg').addEventListener('close', stopScanner);
+  function startPairFromInvite(inv) {
+    if (inv.code === myCode) { toast("That's this device's own code."); return; }
+    const d = devices.get(inv.code);
+    if (d && d.paired && !d.keyMismatch) { connectTo(inv.code, { manual: true }); toast(`${d.name} is already paired — connecting`); return; }
+    connectTo(inv.code, { manual: true, pair: true, token: inv.token });
   }
 
   // =====================================================================
@@ -1433,30 +2267,37 @@
     const add = (ok, title, text, fix) => res.push({ ok, title, text, fix });
     const online = navigator.onLine;
     add(online ? 'ok' : 'bad', 'Internet', online ? 'Connected.' : 'This device is offline.', online ? '' : 'Turn on Wi-Fi or mobile data.');
-    if (peer && peer.open) add('ok', 'Connection service', 'Reachable — devices can find each other.');
-    else if (codeTakenSince && Date.now() - codeTakenSince > 120000) add('bad', 'Connection service', 'This device’s code is in use somewhere else.', 'Close QuickShare in other tabs or windows on this device. If that doesn’t help, Settings → “Give this device a new code”.');
+    if (peer && peer.open) add('ok', 'Connection service', 'Reachable — your devices can find each other.');
+    else if (codeTakenSince && Date.now() - codeTakenSince > 120000) add('bad', 'Connection service', 'This device’s code is in use somewhere else.', 'Close QuickShare in other tabs or windows on this device.');
     else add('bad', 'Connection service', 'Not reachable right now — retrying automatically.', online ? 'Usually fixes itself within a minute. Office or school Wi-Fi may block it — try mobile data.' : 'Get online first.');
+    add(keysStored ? 'ok' : 'warn', 'Security', keysStored ? 'This device has its own security key. Only devices you paired can connect, and every connection is end-to-end encrypted.' : 'This browser won’t store the security key (private browsing?).',
+      keysStored ? '' : 'Use a normal (not private) browser window so pairings are remembered.');
+    if (isIOS && !isStandalone) add('warn', 'Opened in Safari', 'Safari keeps a separate device list from the Home Screen app.', 'For everyday use, open QuickShare from your Home Screen (Share → Add to Home Screen if it isn’t there yet).');
     if (window.RTCPeerConnection) {
       const nat = await natTest();
       if (nat === 'ok') add('ok', 'Direct connections', 'Your network allows direct device-to-device links.');
       else if (nat === 'strict') add(settings.turnUrl ? 'ok' : 'warn', 'Direct connections', 'Your network is strict (common on mobile data). Same Wi-Fi works; between different networks it may fail.', settings.turnUrl ? 'A relay is set up, so this is covered.' : 'Use the same Wi-Fi when possible. If devices on different networks can’t connect, add a TURN relay in Settings → Advanced.');
       else add('warn', 'Direct connections', 'Could not test (the network blocks the test servers).', 'Same Wi-Fi should still work. Across networks you may need a TURN relay (Settings → Advanced).');
     } else add('bad', 'Direct connections', 'This browser can’t make device-to-device links.', 'Use Safari on iPhone, or Chrome / Edge elsewhere.');
+    const un = recentUnverified();
+    const macFix = isMac ? ` On this Mac: System Settings → Privacy & Security → Local Network → turn on ${browserName()}, then reload QuickShare.` : '';
     if (settings.discover === false) add('warn', 'Same Wi-Fi discovery', 'Turned off.', 'Turn on in Settings to see nearby devices automatically.');
-    else if (nearbyState === 'ready') add('ok', 'Same Wi-Fi discovery', nearby.size ? `Working — ${nearby.size} device${nearby.size > 1 ? 's' : ''} found on this Wi-Fi.` : 'Working — no other devices on this Wi-Fi right now.', nearby.size ? '' : 'If a device is on the same Wi-Fi but not listed, the router may isolate devices (common on office/hotel Wi-Fi) — use the code instead.');
-    else add('warn', 'Same Wi-Fi discovery', 'Not available on this network.', 'Use the QR code or the 6-letter code instead.');
-    const known = [...devices.values()].filter(d => d.remembered);
-    if (!known.length) add('warn', 'Your devices', 'No devices connected yet.', 'Open QuickShare on the other device and scan this device’s QR code.');
+    else if (nearbyState === 'ready') add(un ? 'warn' : 'ok', 'Same Wi-Fi discovery', `Network ID ${networkIds()}. ` + (nearby.size ? `${nearby.size} device${nearby.size > 1 ? 's' : ''} found on this Wi-Fi.` : 'No other devices found on this Wi-Fi right now.') +
+      (un ? ` ${un} device${un > 1 ? 's' : ''} on the same internet address could not be confirmed as local.` : ''),
+      (un || !nearby.size) ? 'Both devices must show the same Network ID here. If they differ, one of them uses a VPN, iCloud Private Relay or another network.' + macFix + ' Guest/office Wi-Fi often isolates devices — pair with Scan or the code instead.' : '');
+    else add('warn', 'Same Wi-Fi discovery', 'Not available on this network.', 'Pair with Scan or the 6-letter code instead.');
+    const known = [...devices.values()].filter(d => d.paired || d.legacy || d.keyMismatch);
+    if (!known.length) add('warn', 'Your devices', 'No devices paired yet.', 'Tap ＋ Add device and scan the other device’s QR code.');
     for (const d of known) {
       const st = deviceStatus(d);
-      add(d.ready ? 'ok' : 'warn', d.name, st.text, d.ready ? (d.rtt > 400 ? 'The link is slow — moving closer to the Wi-Fi router helps.' : '') :
-        `Make sure QuickShare is open on ${d.name} with its screen on. It reconnects by itself.`);
+      add(d.ready ? 'ok' : 'warn', d.name, st.text + (d.ready && d.rtt != null ? ` · ${d.rtt} ms` : ''), d.ready ? (d.rtt > 400 ? 'The link is slow — moving closer to the Wi-Fi router helps.' : '') :
+        d.keyMismatch ? 'Tap Review next to it under My devices.' : d.legacy ? 'Tap Pair next to it (needed once after the security upgrade).' : `Make sure QuickShare is open on ${d.name} with its screen on. It reconnects by itself.`);
     }
     const awakeOn = !!wakeLock || awakeVideoOn;
     add(awakeOn || settings.keepAwake === false ? (awakeOn ? 'ok' : 'warn') : 'warn', 'Keep screen on', awakeOn ? 'On — the screen won’t lock while QuickShare is open.' : settings.keepAwake === false ? 'Turned off in Settings.' : 'Not active yet.',
       awakeOn ? '' : 'Tap anywhere on the page. If the screen still locks, set Auto-Lock / Screen timeout to a longer time in your phone’s settings.');
     add('ok', 'Saving received files', settings.autoSave === false ? 'Manual — tap Save on each file.' : isIOS ? 'iPhone: one tap on “Save to Photos” saves everything that arrived.' :
-      folderHandle && folderOk ? `Automatic — into folder “${folderHandle.name}”.` : 'Automatic — into Downloads.');
+      folderHandle && folderOk ? `Automatic — into folder “${folderHandle.name}” (folders keep their structure).` : 'Automatic — into Downloads (folders arrive as a .zip).');
     const opfs = !!(await getOpfs());
     add(opfs ? 'ok' : 'warn', 'Large files', opfs ? 'Big files are written straight to storage.' : 'This browser keeps incoming files in memory.', opfs ? '' : 'Files over about 1 GB may fail on this device — update iOS / the browser.');
     lastChecks = res;
@@ -1473,19 +2314,19 @@
     }
   }
   function report() {
-    const lines = [`QuickShare ${APP_VERSION} report — ${new Date().toString()}`, `Device: ${settings.name} (${myCode}) · ${navigator.userAgent}`,
-      `Service: ${peer && peer.open ? 'online' : 'offline'} · status "${$('netText').textContent}" · online=${navigator.onLine}`,
-      `Settings: autoSave=${settings.autoSave !== false} keepAwake=${settings.keepAwake !== false} discover=${settings.discover !== false} turn=${settings.turnUrl ? 'set' : 'none'} signal=${settings.signal ? 'custom' : 'default'}`,
-      `Screen lock: wakeLock=${!!wakeLock} video=${awakeVideoOn} · nearby=${nearbyState}/${nearby.size}`, '', 'Checks:'];
+    const lines = [`QuickShare ${APP_VERSION} report — ${new Date().toString()}`, `Device: ${settings.name} (${myCode}) · ${myPlatform} · ${browserName()} · standalone=${isStandalone} · ${navigator.userAgent}`,
+      `Service: ${peer && peer.open ? 'online' : 'offline'} · status "${$('netText').textContent}" · online=${navigator.onLine} · key stored=${keysStored}`,
+      `Settings: autoSave=${settings.autoSave !== false} keepAwake=${settings.keepAwake !== false} discover=${settings.discover !== false} history=${settings.history !== false} turn=${settings.turnUrl ? 'set' : 'none'} signal=${settings.signal ? 'custom' : 'default'}`,
+      `Screen lock: wakeLock=${!!wakeLock} video=${awakeVideoOn} · nearby=${nearbyState} found=${nearby.size} unconfirmed=${recentUnverified()} · network IDs ${networkIds()}`, '', 'Checks:'];
     for (const r of lastChecks) lines.push(`  [${r.ok}] ${r.title}: ${r.text}`);
     lines.push('', 'Devices:');
-    for (const d of devices.values()) lines.push(`  ${d.code} "${d.name}" state=${d.ready ? 'connected' : d.state} route=${d.route || '-'} rtt=${d.rtt ?? '-'} trusted=${d.trusted} allowed=${isAllowed(d)} queued=${d.outbox.filter(j => !isFinal(j)).length} partial=${d.partials.size}`);
-    lines.push('', 'Recent events:', ...events.slice(-80).map(e => '  ' + e));
+    for (const d of devices.values()) lines.push(`  ${d.code} "${d.name}" ${d.platform || '?'} paired=${d.paired} legacy=${d.legacy} keyChanged=${d.keyMismatch} state=${d.ready ? 'connected' : d.state} route=${d.route || '-'} rtt=${d.rtt ?? '-'} queued=${d.outbox.filter(j => !isFinal(j)).length} partial=${d.partials.size} app=${d.appVersion || '-'}`);
+    lines.push('', 'Recent events:', ...events.slice(-90).map(e => '  ' + e));
     return lines.join('\n');
   }
   async function copyReport() {
     const text = report();
-    try { await navigator.clipboard.writeText(text); toast('Report copied — paste it into a message'); return; } catch {}
+    if (await copyText(text)) { toast('Report copied — paste it into a message'); return; }
     try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { if (e.name === 'AbortError') return; }
     const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'width:100%;height:160px;margin-top:10px;font-size:11px';
     $('checks').append(ta); ta.select(); toast('Select all and copy the text below');
@@ -1493,46 +2334,98 @@
   function openHelp() { $('helpDlg').showModal(); runChecks(); }
 
   // =====================================================================
-  //  Sharing into QuickShare (Android share sheet) & invite links
+  //  Invite links & sharing into QuickShare (Android share sheet)
   // =====================================================================
+  let pendingInvite = null;
   function openInviteFromLink() {
-    const h = (location.hash || '').replace('#', '').toUpperCase();
-    if (validCode(h) && h !== myCode) { history.replaceState(null, '', location.pathname + location.search); connectTo(h, true); }
+    const inv = pendingInvite || parseInvite(location.hash.replace(/^#/, ''));
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    if (!inv || inv.code === myCode) return;
+    pendingInvite = null;
+    if (isIOS && !isStandalone && !store.get('safariOk', false)) { pendingInvite = inv; $('safariBanner').hidden = false; return; }
+    startPairFromInvite(inv);
   }
-  async function takeSharedFiles() {
+  $('safariHereBtn').onclick = () => { $('safariBanner').hidden = true; store.set('safariOk', true); const inv = pendingInvite; pendingInvite = null; if (inv) startPairFromInvite(inv); };
+  $('safariOkBtn').onclick = () => { $('safariBanner').hidden = true; pendingInvite = null; toast('Open QuickShare from your Home Screen, then ＋ Add device → Scan.'); };
+  async function takeShared() {
     if (!/[?&]shared=1/.test(location.search)) return;
     history.replaceState(null, '', location.pathname);
     const data = await idbGet('shared'); await idbSet('shared', undefined);
     const files = (data && data.files || []).filter(f => f && f.size !== undefined);
-    if (!files.length) { toast('Nothing to send was shared.'); return; }
-    log(`Got ${files.length} file(s) from the share sheet`);
-    // Give remembered devices a moment to reconnect so they show as connected in the picker.
-    setTimeout(() => pickDevice(files), [...devices.values()].some(wantsConnection) ? 2500 : 0);
+    const text = [data && data.title, data && data.text, data && data.url].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join('\n').trim();
+    if (!files.length && !text) { toast('Nothing to send was shared.'); return; }
+    log(`Got ${files.length} file(s)${text ? ' and text' : ''} from the share sheet`);
+    const later = [...devices.values()].some(wantsConnection) ? 2500 : 0;
+    setTimeout(() => { if (files.length) pickDevice(files); else openText(null, text); }, later);
   }
   async function shareInvite() {
-    const link = inviteLink();
-    try { if (navigator.share) { await navigator.share({ title: 'Connect to my QuickShare', text: `Open this to send files to “${settings.name}”:`, url: link }); return; } } catch (e) { if (e.name === 'AbortError') return; }
-    try { await navigator.clipboard.writeText(link); toast('Invite link copied'); } catch { toast(link); }
+    const link = inviteLink(makeToken(LINK_TOKEN_MS));
+    try { if (navigator.share) { await navigator.share({ title: 'Pair with my QuickShare', text: `Open this on your device to pair with “${settings.name}” (works once, for 24 hours):`, url: link }); return; } } catch (e) { if (e.name === 'AbortError') return; }
+    if (await copyText(link)) toast('Invite link copied — it works once, for 24 hours'); else toast(link);
   }
+
+  // =====================================================================
+  //  Picking files & folders, drag and drop
+  // =====================================================================
+  const canSendFolder = !isIOS && 'webkitdirectory' in document.createElement('input');
+  if (!canSendFolder) { $('sendFolderBtn').hidden = true; $('sendRow').classList.add('two'); }
+  $('sendFilesBtn').onclick = () => { pendingTargets = null; $('fileInput').click(); };
+  $('sendFolderBtn').onclick = () => { pendingTargets = null; $('folderInput').click(); };
+  $('sendTextBtn').onclick = () => openText(targets());
+  function deliverPicked(items, folderName) {
+    const ts = pendingTargets || targets(); pendingTargets = null;
+    if (ts.length) queueFiles(items, ts, folderName); else pickDevice(items, folderName);
+  }
+  $('fileInput').onchange = (e) => {
+    const fs = [...e.target.files]; e.target.value = '';
+    if (!fs.length) { pendingTargets = null; return; }
+    deliverPicked(fs.map(f => ({ file: f, path: '' })), null);
+  };
+  $('folderInput').onchange = (e) => {
+    const fs = [...e.target.files]; e.target.value = '';
+    if (!fs.length) { pendingTargets = null; toast('That folder is empty.'); return; }
+    const groups = new Map();
+    for (const f of fs) { const rel = (f.webkitRelativePath || f.name).split('/'); const top = rel.length > 1 ? rel[0] : 'Folder'; const path = rel.slice(0, -1).join('/');
+      if (!groups.has(top)) groups.set(top, []); groups.get(top).push({ file: f, path }); }
+    const saved = pendingTargets;
+    for (const [top, items] of groups) { pendingTargets = saved; deliverPicked(items, top); }
+  };
+  async function readEntry(entry, parent, out) {
+    if (entry.isFile) { try { out.push({ file: await new Promise((res, rej) => entry.file(res, rej)), path: parent }); } catch {} return; }
+    if (!entry.isDirectory) return;
+    const path = parent ? parent + '/' + entry.name : entry.name;
+    const reader = entry.createReader(); let batch;
+    do { batch = await new Promise((res) => reader.readEntries(res, () => res([]))); for (const e of batch) await readEntry(e, path, out); } while (batch.length);
+  }
+  const drop = $('drop');
+  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); if (ev === 'drop' || e.target === document.documentElement) drop.classList.remove('over'); }));
+  document.addEventListener('drop', async (e) => {
+    const dt = e.dataTransfer; if (!dt) return;
+    const entries = [...(dt.items || [])].map(it => it.webkitGetAsEntry && it.webkitGetAsEntry()).filter(Boolean);
+    if (!devices.size || ![...devices.values()].some(d => d.paired)) { toast('Pair a device first (＋ Add device).'); return; }
+    if (entries.some(en => en.isDirectory)) {
+      const loose = [];
+      for (const en of entries) {
+        if (en.isDirectory) { const out = []; await readEntry(en, '', out); if (out.length) deliverPicked(out, en.name); }
+        else await readEntry(en, '', loose);
+      }
+      if (loose.length) deliverPicked(loose, null);
+      return;
+    }
+    const fs = [...(dt.files || [])]; if (fs.length) deliverPicked(fs.map(f => ({ file: f, path: '' })), null);
+  });
 
   // =====================================================================
   //  Wiring
   // =====================================================================
-  $('connectForm').addEventListener('submit', (e) => { e.preventDefault(); connectTo($('peerCode').value, true); $('peerCode').value = ''; $('peerCode').blur(); });
-  $('pickBtn').onclick = () => { pendingTarget = null; $('fileInput').click(); };
-  $('fileInput').onchange = (e) => {
-    const fs = [...e.target.files]; e.target.value = '';
-    if (!fs.length) { pendingTarget = null; return; }
-    const ts = pendingTarget ? [pendingTarget] : targets(); pendingTarget = null;
-    if (ts.length) queueFiles(fs, ts); else pickDevice(fs);
-  };
-  const drop = $('drop');
-  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
-  ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); if (ev === 'drop' || e.target === document.documentElement) drop.classList.remove('over'); }));
-  document.addEventListener('drop', (e) => { const fs = [...(e.dataTransfer && e.dataTransfer.files || [])]; if (!fs.length) return; const ts = targets(); if (ts.length) queueFiles(fs, ts); else pickDevice(fs); });
+  $('addBtn').onclick = openAdd;
+  $('connectForm').addEventListener('submit', (e) => { e.preventDefault(); const v = $('peerCode').value; $('peerCode').value = ''; $('peerCode').blur(); const inv = parseInvite(v); if (inv) startPairFromInvite(inv); else toast('Codes are 6 letters/numbers.'); });
   $('inviteBtn').onclick = shareInvite;
   $('cancelAllBtn').onclick = cancelAll;
   $('clearBtn').onclick = clearFinished;
+  $('clearHistBtn').onclick = async () => { const r = await confirmAsk({ title: 'Clear history?', text: 'Removes the list of past transfers on this device. Received files you saved are not affected.', yes: 'Clear', no: 'Cancel' }); if (!r.ok) return; xhist = []; store.set('history', xhist); renderHistory(); updateTransfersUI(); };
+  $('tabNow').onclick = () => showTab('now'); $('tabHist').onclick = () => showTab('hist');
   $('saveAllBtn').onclick = saveAllPending;
   $('saveLaterBtn').onclick = () => { $('saveBanner').hidden = true; };
   $('pickFolderBtn').onclick = pickFolder;
@@ -1546,28 +2439,35 @@
     $('setName').value = settings.name; $('setTurnUrl').value = settings.turnUrl; $('setTurnUser').value = settings.turnUser;
     $('setTurnPass').value = settings.turnPass; $('setSignal').value = settings.signal; $('setNewCode').checked = false;
     $('setDiscover').checked = settings.discover !== false; $('setAutoSave').checked = settings.autoSave !== false; $('setKeepAwake').checked = settings.keepAwake !== false;
+    $('setHistory').checked = settings.history !== false;
     renderFolderUI(); $('settingsDlg').showModal();
   };
   $('forgetAllBtn').onclick = async () => {
-    const r = await ask({ title: 'Forget all devices?', text: 'They will need approval to connect again. Connected devices are disconnected.', yes: 'Forget all', no: 'Cancel' });
+    const r = await confirmAsk({ title: 'Remove all paired devices?', text: 'They are unpaired on both sides. You would need to pair again to send files.', yes: 'Remove all', no: 'Cancel' });
     if (!r.ok) return;
-    for (const d of [...devices.values()]) { d.paused = true; d.remembered = false; d.trusted = false; d.allowedUntil = 0; clearTimeout(d.retryTimer); if (d.conn) { send(d, { t: 'bye' }); try { d.conn.close(); } catch {} } }
-    saveDevices(); devices.clear(); render(); toast('All devices forgotten');
+    for (const d of [...devices.values()]) forgetDevice(d);
+    devices.clear(); saveDevices(); render(); toast('All devices removed');
   };
-  $('settingsDlg').addEventListener('close', () => {
+  $('settingsDlg').addEventListener('close', async () => {
     if ($('settingsDlg').returnValue !== 'save') return;
     const before = JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
     const nameChanged = $('setName').value.trim() !== settings.name;
     settings = { name: clean($('setName').value) || defaultName(), turnUrl: $('setTurnUrl').value.trim(), turnUser: $('setTurnUser').value.trim(),
                  turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked,
-                 autoSave: $('setAutoSave').checked, keepAwake: $('setKeepAwake').checked };
+                 autoSave: $('setAutoSave').checked, keepAwake: $('setKeepAwake').checked, history: $('setHistory').checked };
     store.set('settings', settings);
+    if (settings.history === false) { xhist = []; store.set('history', []); }
     const restart = $('setNewCode').checked || before !== JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
-    if ($('setNewCode').checked) { myCode = newCode(); store.set('code', myCode); log('Changed this device code'); }
+    if ($('setNewCode').checked) {
+      myCode = newCode(); store.set('code', myCode); log('Changed this device code');
+      await idbSet('identity', { priv: myKeys.privateKey, pub: myKeys.publicKey, pubB64: myPub, code: myCode, at: Date.now() });
+      tokens = []; saveTokens(); qrToken = null;
+      toast('New code set. Paired devices need to pair again with the new code.');
+    }
     renderMe(); renderFolderUI(); applyKeepAwake();
     if (restart) { for (const d of devices.values()) { if (d.conn) { try { d.conn.close(); } catch {} } } startPeer(); startNearby(true); }
     else if (nameChanged) startNearby(true);
-    else if (settings.discover === false || !beacon) startNearby(false);
+    else startNearby(false);
     toast('Settings saved');
   });
   document.addEventListener('visibilitychange', () => {
@@ -1577,27 +2477,33 @@
   });
   window.addEventListener('online', () => { log('Network back'); kickPeer(); healthCheckAll(); recheckNearby(); });
   window.addEventListener('offline', () => { log('Network lost'); setNet('off', 'No internet'); });
+  window.addEventListener('hashchange', () => { if (peer && peer.open) openInviteFromLink(); });
   window.addEventListener('beforeunload', (e) => { if (activeCount() > 0) { e.preventDefault(); e.returnValue = ''; } });
-  setInterval(() => { // refresh "Reconnecting…" texts and expired approvals
-    for (const d of devices.values()) if (!d.ready && d.remembered && !isAllowed(d) && d.retryTimer) { clearTimeout(d.retryTimer); d.retryTimer = null; }
-    render();
-  }, 10000);
+  setInterval(() => { if (!$('askDlg').open) render(); if ($('addDlg').open) renderMe(); }, 10000);
 
   // =====================================================================
   //  Start
   // =====================================================================
+  let identityReady;
   if (typeof Peer === 'undefined') { setNet('off', 'Failed to load — check internet and reopen'); return; }
+  if (!window.crypto || !crypto.subtle) { setNet('off', 'Needs a secure (https) page'); return; }
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   renderMe(); render(); updateTransfersUI();
-  cleanOpfs();
-  startPeer();
-  startNearby(true);
+  identityReady = loadIdentity().catch((e) => { log('Security key error: ' + (e && e.message || e)); setNet('off', 'Security key error — reload'); throw e; });
+  identityReady.then(() => {
+    cleanOpfs();
+    startPeer();
+    startNearby(true);
+    takeShared();
+  }).catch(() => {});
   loadFolder();
   applyKeepAwake();
-  takeSharedFiles();
-  log(`QuickShare ${APP_VERSION} started on ${settings.name} (${myCode})`);
-  window.__qs = { devices, nearby, get code() { return myCode; }, connectTo, queueFiles, report, events,
-    awake: () => ({ wakeLock: !!wakeLock, video: awakeVideoOn, note: $('awakeNote').textContent }),
+  log(`QuickShare ${APP_VERSION} started on ${settings.name} (${myCode}) · ${myPlatform} · ${browserName()}${isStandalone ? ' · home-screen app' : ''}`);
+  window.__qs = { devices, nearby, get code() { return myCode; }, connectTo, queueFiles, queueText, report, events, get history() { return xhist; },
+    awake: () => ({ wakeLock: !!wakeLock, video: awakeVideoOn }), parseInvite, buildZip, crcUpdate,
+    inviteLink: () => inviteLink(currentQrToken()), shareLink: () => inviteLink(makeToken(LINK_TOKEN_MS)), openAdd,
+    get pub() { return myPub; }, get nearbyState() { return nearbyState; }, get unverified() { return recentUnverified(); },
     setFolder(h) { folderHandle = h; folderOk = true; renderFolderUI(); },
     get peer() { return peer; } }; // for testing
 })();

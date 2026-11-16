@@ -1,59 +1,47 @@
-QuickShare - send & receive files between iPhone, Android, Windows and Mac
-==========================================================================
+QuickShare 3.0 - send files, folders and text between iPhone, Android, Windows and Mac
+=====================================================================================
 
-HOW TO PUT IT ONLINE (one time, about 5 minutes, free)
-1. On a computer, unzip this folder.
-2. Go to https://app.netlify.com/drop and sign up for a free account.
-3. Drag the whole "quickshare" folder onto the page.
-4. Netlify gives you a link like https://something.netlify.app - that is your app.
-   (You can rename it under Site configuration -> Change site name.)
+App: https://bhaskar3434.github.io/quickshare/
 
 INSTALL ON EACH DEVICE
-- iPhone/iPad: open the link in Safari -> Share button -> "Add to Home Screen".
-- Android: open in Chrome -> menu -> "Add to Home screen" / "Install app".
-- Windows/Mac: open in Chrome or Edge (or Safari on Mac) and bookmark it, or use "Install app".
+- iPhone/iPad: open the link in Safari -> Share -> "Add to Home Screen". Always open it from the Home Screen icon
+  (Safari and the Home Screen app keep separate device lists).
+- Android: open in Chrome -> menu -> "Install app". It then also appears in the Android share sheet.
+- Windows/Mac: open in Chrome, Edge or Safari. Chrome/Edge: menu -> "Install QuickShare" (optional).
 
-SENDING A FILE
-1. Open the app on both devices.
-2. Same Wi-Fi: the other device appears under "Nearby on this Wi-Fi" - tap Connect.
-   Elsewhere: scan the other's QR code with the camera, or type its 6-letter code and tap Connect.
-3. The other device taps Allow (tick "Always allow" for your own devices).
-4. Tap "Choose files to send". Progress shows on both devices.
-5. On the receiving device tap Save (iPhone: goes to Files -> Downloads; use Share to put photos/videos into Photos).
+PAIR ONCE (then devices find each other by themselves, on any network)
+1. On one device tap "+ Add device". It shows a QR code.
+2. On the other device tap "+ Add device" -> "Scan the other device's QR code". Done - no popups.
+   Other ways: tap a device under "Found on this Wi-Fi", or type the 6-letter code. Then both screens show
+   the same 6-digit number - check it matches and confirm on both devices.
+3. Paired devices stay paired until you remove them ("..." next to the device -> Remove device).
 
-AUTOMATIC SAVING (Settings -> "Save received files automatically", on by default)
-- Android: received files go straight to Downloads (Gallery/Google Photos shows them under "Download").
-  Chrome may ask once to "allow multiple downloads" - tap Allow.
-- Windows / Mac: files go to Downloads. On Chrome or Edge you can pick your own folder in Settings.
-- iPhone / iPad: Apple does not let websites save to Photos without a tap. A banner appears at the top
-  ("3 photos received") - one tap on "Save to Photos" saves them all.
+SENDING
+- Files & photos, a whole Folder (Android/Windows/Mac), or Text / link (paste OTPs, addresses, links).
+- Several paired devices? Tap their names above the Send buttons to choose.
+- Send to a device that is closed: it waits and goes as soon as that device opens QuickShare.
+- If a link drops mid-transfer, the file continues from where it stopped.
 
-STABILITY (version 2.0)
-- Approved devices reconnect by themselves (no popup for 24 hours; never with "Always allow").
-- If a link drops mid-transfer, the file continues from where it stopped once the devices reconnect.
-- Send to a device that is closed: the file waits and goes as soon as that device opens QuickShare.
-- "Cancel all" stops every transfer on both sides; "Clear finished" tidies the list.
-- Android: repeated file names are saved as "photo (1).jpg" so Chrome doesn't ask "Download again?".
+RECEIVING
+- Android, Windows, Mac: saved automatically to Downloads. Chrome/Edge on a computer can save into a folder you choose
+  (Settings). Folders arrive as a .zip in Downloads, or as real subfolders in your chosen folder.
+- iPhone: a banner "3 photos received" - one tap on "Save to Photos" saves them all (Apple requires the tap).
+- Text messages show with Copy and Open link buttons. "History" lists past transfers (kept only on that device).
+
+PRIVACY & SECURITY
+- Files and messages go directly device-to-device, end-to-end encrypted, and are never uploaded anywhere.
+- Each device has its own secret key that never leaves it. Only paired devices can connect, and every connection
+  is proven with that key - someone who knows your code cannot pretend to be your device.
+- A QR code / invite link works once (QR: 15 minutes, link: 24 hours).
+- "Security key changed" warning = the other device was reset, or someone is impersonating it. Nothing is sent
+  until you check and pair again.
 
 TROUBLESHOOTING
-- Tap the 🩺 button: it checks internet, the connection service, your network, each device, screen lock,
-  saving and large-file support, and says how to fix anything that's wrong.
-- "Copy report" gives a text summary (no files, no personal data) to paste to whoever helps you.
-
-SHARE FROM OTHER APPS (Android)
-- After installing QuickShare (Chrome menu -> Install app), it appears in the Android share sheet:
-  Photos/Files -> Share -> QuickShare -> pick a device. (iPhone doesn't allow web apps in its share sheet.)
-
-GOOD TO KNOW
-- Nearby list: only devices that can reach each other directly over your local network are shown.
-  Devices you marked "Always allow" reconnect automatically whenever both are open on the same Wi-Fi.
-  Turn the list off in Settings if you prefer. Some office/hotel Wi-Fi blocks devices from seeing
-  each other ("client isolation") - use the code there.
-- Files travel directly device-to-device, encrypted (WebRTC/DTLS). They are not uploaded anywhere.
-- Same Wi-Fi: traffic stays on your local network and is fastest.
-- Different networks: works in most cases. If two devices can't connect (common when BOTH are on
-  mobile data), add a TURN relay in Settings (gear icon) on both devices.
-- Keep the app open and the screen on while a transfer runs. iPhone pauses web apps in the background.
-- Very large files (several GB) are streamed to disk on modern browsers (iOS 26+, Chrome, Edge, Firefox).
-  On older iPhones the file is held in memory, so multi-GB files may fail there.
-- The free PeerJS cloud server is used only to introduce devices to each other (like a phone directory).
+- Tap the stethoscope button: it checks internet, the connection service, security, your network, each device,
+  screen lock, saving and large files - and says how to fix problems. "Copy report" gives a text summary
+  (no files, no messages) to paste to whoever helps you.
+- Devices on the same Wi-Fi don't appear under "Found on this Wi-Fi"? Compare the "Network ID" in the check on both
+  devices. On a Mac allow your browser in System Settings -> Privacy & Security -> Local Network. VPNs, iCloud
+  Private Relay, guest/office Wi-Fi can hide devices - just pair with Scan instead; it works on any network.
+- Phones pause web apps when the screen locks; QuickShare keeps the screen on while open, and resumes after.
+- Two devices both on mobile data may need a TURN relay (Settings -> Advanced). The check tells you.
