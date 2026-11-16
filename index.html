@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QuickShare</title>
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="QuickShare">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #f4f6fb; --card: #fff; --text: #111827; --muted: #6b7280; --line: #e5e7eb;
+    --blue: #2563eb; --blue-soft: #e8efff; --green: #059669; --red: #dc2626; --amber: #b45309;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0b1020; --card: #151b2e; --text: #f3f4f6; --muted: #9ca3af; --line: #26304a;
+            --blue: #4f86ff; --blue-soft: #1c2a4d; --green: #34d399; --red: #f87171; --amber: #fbbf24; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { padding: calc(env(safe-area-inset-top) + 12px) calc(env(safe-area-inset-right) + 14px)
+                  calc(env(safe-area-inset-bottom) + 24px) calc(env(safe-area-inset-left) + 14px); }
+  main { max-width: 560px; margin: 0 auto; }
+  header { display: flex; align-items: center; justify-content: space-between; margin: 4px 2px 14px; }
+  h1 { font-size: 24px; margin: 0; letter-spacing: -0.3px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+  .dot.on { background: var(--green); } .dot.off { background: var(--red); }
+  .me { display: flex; gap: 16px; align-items: center; }
+  .qr { width: 132px; height: 132px; flex: none; background: #fff; border-radius: 12px; padding: 6px; }
+  .qr svg, .qr img { width: 100%; height: 100%; display: block; }
+  .code { font: 700 34px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 4px; margin: 2px 0 6px; }
+  .small { font-size: 13px; color: var(--muted); }
+  button, .btn { appearance: none; border: 0; border-radius: 12px; padding: 12px 16px; font-family: inherit; font-weight: 600; font-size: 15px; line-height: 1; background: var(--blue); color: #fff; cursor: pointer; text-decoration: none; display: inline-flex;
+    align-items: center; justify-content: center; gap: 6px; min-height: 44px; }
+  button.ghost, .btn.ghost { background: var(--blue-soft); color: var(--blue); }
+  button.plain { background: transparent; color: var(--blue); padding: 8px; min-height: 36px; }
+  button.danger { background: transparent; color: var(--red); padding: 8px 10px; min-height: 36px; }
+  button:disabled { opacity: .45; cursor: default; }
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  input[type=text], input[type=password] { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font-family: inherit; font-size: 16px; min-height: 44px; }
+  #peerCode { text-transform: uppercase; letter-spacing: 3px; font-family: ui-monospace, Menlo, monospace; font-weight: 700; }
+  .devices { display: flex; flex-direction: column; gap: 8px; }
+  .device { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--bg); }
+  .device input { width: 20px; height: 20px; accent-color: var(--blue); }
+  .device .name { flex: 1; min-width: 0; }
+  .device .name b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .device button.mini { min-height: 36px; padding: 8px 14px; flex: none; }
+  .wifi { font-size: 18px; flex: none; }
+  .empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
+  .drop { border: 2px dashed var(--line); border-radius: 14px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 10px; }
+  @media (hover: none) { .drop { display: none; } }
+  .drop.over { border-color: var(--blue); color: var(--blue); }
+  .xfer { padding: 12px 0; border-top: 1px solid var(--line); }
+  .xfer:first-child { border-top: 0; padding-top: 2px; }
+  .xfer .top { display: flex; align-items: center; gap: 8px; }
+  .xfer .fname { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--blue); transition: width .2s; }
+  .xfer.done .bar > i { background: var(--green); }
+  .xfer.fail .bar > i { background: var(--red); }
+  .xfer .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .xfer .actions > * { flex: 1; }
+  dialog { border: 0; border-radius: 18px; padding: 0; width: min(92vw, 460px); background: var(--card); color: var(--text); }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  dialog .inner { padding: 18px; }
+  dialog h3 { margin: 0 0 8px; font-size: 18px; }
+  dialog label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+  details { margin-top: 14px; } summary { cursor: pointer; color: var(--blue); font-weight: 600; }
+  .check { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: 14px; }
+  .check input { width: 20px; height: 20px; accent-color: var(--blue); }
+  #toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 20px); transform: translateX(-50%) translateY(20px);
+    background: #111827; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 14px; opacity: 0; pointer-events: none;
+    transition: all .25s; max-width: 90vw; text-align: center; z-index: 10; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>QuickShare</h1>
+    <div class="row" style="flex:none;align-items:center;gap:4px">
+      <span class="status"><span class="dot" id="netDot"></span><span id="netText">Starting…</span></span>
+      <button class="plain" id="settingsBtn" aria-label="Settings">⚙︎</button>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>This device</h2>
+    <div class="me">
+      <div class="qr" id="qr" aria-label="QR code to connect to this device"></div>
+      <div style="min-width:0">
+        <div class="small" id="myName">—</div>
+        <div class="code" id="myCode">······</div>
+        <div class="small">Scan the QR with another phone's camera, or enter this code on the other device.</div>
+        <div class="row" style="margin-top:10px">
+          <button class="ghost" id="copyLinkBtn">Copy invite link</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Nearby on this Wi-Fi</h2>
+    <div class="devices" id="nearby"><div class="empty" id="nearbyEmpty">Looking for devices on this Wi-Fi…</div></div>
+  </section>
+
+  <section class="card">
+    <h2>Connect with a code</h2>
+    <form id="connectForm" class="row">
+      <input type="text" id="peerCode" placeholder="Enter code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" style="flex:none">Connect</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Connected devices</h2>
+    <div class="devices" id="devices"><div class="empty">No devices connected yet.</div></div>
+  </section>
+
+  <section class="card">
+    <h2>Send files</h2>
+    <div class="drop" id="drop">Drop files here, or</div>
+    <input type="file" id="fileInput" multiple hidden>
+    <button id="pickBtn" style="width:100%" disabled>Choose files to send</button>
+    <div class="hint" id="sendHint">Connect a device first.</div>
+  </section>
+
+  <section class="card">
+    <h2>Transfers</h2>
+    <div id="xfers"><div class="empty">Nothing yet.</div></div>
+  </section>
+
+  <p class="small" style="text-align:center">Files go directly between devices and are not uploaded to any server.<br>Keep this screen open while a transfer runs.</p>
+</main>
+
+<dialog id="settingsDlg">
+  <form method="dialog" class="inner" id="settingsForm">
+    <h3>Settings</h3>
+    <label for="setName">Device name (shown to others)</label>
+    <input type="text" id="setName" maxlength="40">
+    <details>
+      <summary>Advanced: relay for tricky networks</summary>
+      <p class="small">If two devices on different networks (for example, both on mobile data) can't connect, add a TURN relay. Get free credentials from a TURN provider and paste them here on <b>both</b> devices.</p>
+      <label for="setTurnUrl">TURN URL(s), comma separated</label>
+      <input type="text" id="setTurnUrl" placeholder="turn:relay.example.com:443?transport=tcp">
+      <label for="setTurnUser">TURN username</label>
+      <input type="text" id="setTurnUser" autocomplete="off">
+      <label for="setTurnPass">TURN password</label>
+      <input type="password" id="setTurnPass" autocomplete="off">
+      <label for="setSignal">Signaling server (leave empty for the free PeerJS cloud)</label>
+      <input type="text" id="setSignal" placeholder="https://peer.example.com:443/myapp">
+    </details>
+    <label class="check"><input type="checkbox" id="setDiscover"> Find devices on the same Wi-Fi automatically</label>
+    <label class="check"><input type="checkbox" id="setNewCode"> Give this device a new code</label>
+    <button class="danger" type="button" id="forgetTrusted" style="margin-top:6px">Forget all trusted devices</button>
+    <div class="row" style="margin-top:16px">
+      <button class="ghost" value="cancel" type="submit">Cancel</button>
+      <button value="save" type="submit" id="saveSettings">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="askDlg">
+  <div class="inner">
+    <h3 id="askTitle">Connection request</h3>
+    <p id="askText" style="margin:0"></p>
+    <label class="check"><input type="checkbox" id="askTrust"> Always allow this device</label>
+    <div class="row" style="margin-top:16px">
+      <button class="ghost" id="askNo">Decline</button>
+      <button id="askYes">Allow</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<script src="lib/peerjs.min.js"></script>
+<script src="lib/qrcode.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  // ---------- constants ----------
+  const PREFIX = 'qshare-v1-';
+  const ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const CHUNK = 64 * 1024;            // bytes per DataChannel message (safe on Safari)
+  const READ_BLOCK = 2 * 1024 * 1024; // bytes read from disk at a time
+  const HIGH_WATER = 4 * 1024 * 1024; // pause sending above this buffered amount
+  const LOW_WATER = 1 * 1024 * 1024;
+  const WRITE_BATCH = 4 * 1024 * 1024;
+  const MEMORY_WARN = 1024 * 1024 * 1024; // warn when receiving >1 GB without disk streaming
+
+  // ---------- small helpers ----------
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('qs.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('qs.' + k, JSON.stringify(v)); } catch {} },
+  };
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const newCode = () => { let s = ''; const a = new Uint32Array(6); crypto.getRandomValues(a); for (const n of a) s += ALPHABET[n % ALPHABET.length]; return s; };
+  const fmtBytes = (n) => { if (n < 1024) return n + ' B'; const u = ['KB','MB','GB','TB']; let i = -1; do { n /= 1024; i++; } while (n >= 1024 && i < u.length - 1); return n.toFixed(n < 10 ? 1 : 0) + ' ' + u[i]; };
+  const fmtTime = (s) => { if (!isFinite(s) || s < 0) return ''; s = Math.round(s); if (s < 60) return s + 's'; const m = Math.floor(s / 60); return m < 60 ? m + 'm ' + (s % 60) + 's' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'; };
+  let toastTimer;
+  const toast = (msg) => { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); };
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  function defaultName() {
+    const ua = navigator.userAgent;
+    if (/iPhone/.test(ua)) return 'iPhone';
+    if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'iPad';
+    if (/Android/.test(ua)) return 'Android';
+    if (/Windows/.test(ua)) return 'Windows PC';
+    if (/Mac/.test(ua)) return 'Mac';
+    if (/Linux/.test(ua)) return 'Linux PC';
+    return 'My device';
+  }
+
+  // ---------- settings ----------
+  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true }, store.get('settings', {}));
+  let myCode = store.get('code', null) || newCode();
+  store.set('code', myCode);
+  let trusted = new Set(store.get('trusted', []));
+
+  function iceServers() {
+    const list = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }];
+    if (settings.turnUrl.trim()) {
+      list.push({ urls: settings.turnUrl.split(',').map(s => s.trim()).filter(Boolean), username: settings.turnUser, credential: settings.turnPass });
+    }
+    return list;
+  }
+  function peerOptions() {
+    const o = { config: { iceServers: iceServers() }, debug: 1 };
+    if (settings.signal.trim()) {
+      try {
+        const u = new URL(settings.signal.trim());
+        o.host = u.hostname; o.secure = u.protocol === 'https:';
+        o.port = u.port ? Number(u.port) : (o.secure ? 443 : 80);
+        o.path = u.pathname || '/';
+      } catch { toast('Signaling server address is not valid; using the default.'); }
+    }
+    return o;
+  }
+
+  // ---------- UI: identity ----------
+  function inviteLink() { return location.origin + location.pathname + '#' + myCode; }
+  function renderMe() {
+    $('myCode').textContent = myCode;
+    $('myName').textContent = settings.name;
+    try {
+      const q = qrcode(0, 'M'); q.addData(inviteLink()); q.make();
+      $('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    } catch (e) { $('qr').textContent = ''; }
+  }
+  function setNet(state, text) {
+    $('netDot').className = 'dot' + (state === 'on' ? ' on' : state === 'off' ? ' off' : '');
+    $('netText').textContent = text;
+  }
+
+  // ---------- peer ----------
+  let peer = null;
+  const conns = new Map(); // peerCode -> { conn, name, ready, selected, queue, incoming }
+
+  function startPeer() {
+    if (peer) { try { peer.destroy(); } catch {} }
+    setNet('wait', 'Connecting…');
+    peer = new Peer(PREFIX + myCode, peerOptions());
+    peer.on('open', () => {
+      setNet('on', 'Online');
+      const h = (location.hash || '').replace('#', '').toUpperCase();
+      if (/^[A-Z0-9]{6}$/.test(h) && h !== myCode) { history.replaceState(null, '', location.pathname); connectTo(h); }
+    });
+    peer.on('connection', (conn) => handleIncoming(conn));
+    peer.on('disconnected', () => { setNet('wait', 'Reconnecting…'); setTimeout(() => { if (peer && peer.disconnected && !peer.destroyed) peer.reconnect(); }, 1500); });
+    peer.on('error', (err) => {
+      console.warn('peer error', err.type, err);
+      if (err.type === 'unavailable-id') { myCode = newCode(); store.set('code', myCode); renderMe(); startPeer(); return; }
+      if (err.type === 'peer-unavailable') { toast('That device is not online. Check the code and that the app is open there.'); return; }
+      if (err.type === 'network' || err.type === 'server-error' || err.type === 'socket-error' || err.type === 'socket-closed') { setNet('off', 'Offline'); return; }
+      if (err.type === 'browser-incompatible') { setNet('off', 'Browser not supported'); return; }
+      toast('Connection problem: ' + err.type);
+    });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && peer && peer.disconnected && !peer.destroyed) peer.reconnect();
+  });
+  window.addEventListener('online', () => { if (peer && peer.disconnected && !peer.destroyed) peer.reconnect(); });
+
+  function codeOf(conn) { return conn.peer.startsWith(PREFIX) ? conn.peer.slice(PREFIX.length) : conn.peer; }
+  function sendJSON(conn, obj) { conn.send(JSON.stringify(obj)); }
+
+  function connectTo(code, silent) {
+    code = code.trim().toUpperCase();
+    if (!/^[A-Z0-9]{6}$/.test(code)) { toast('Codes are 6 letters/numbers.'); return; }
+    if (code === myCode) { toast("That's this device's own code."); return; }
+    const existing = conns.get(code);
+    if (existing && silent) return;
+    if (existing && existing.conn.open) { toast('Already connected.'); return; }
+    if (!peer || peer.disconnected) { if (!silent) toast('Still going online — try again in a moment.'); return; }
+    const conn = peer.connect(PREFIX + code, { reliable: true, serialization: 'raw', metadata: { name: settings.name } });
+    const entry = addConn(code, conn, '…', false);
+    if (!silent) toast('Waiting for the other device to allow…');
+    let timer = setTimeout(() => { if (!entry.ready) { if (!silent) toast('No answer from ' + code + '.'); try { conn.close(); } catch {} } }, 60000);
+    conn.on('open', () => sendJSON(conn, { t: 'hello', name: settings.name }));
+    entry.onAccepted = () => { clearTimeout(timer); };
+  }
+
+  function handleIncoming(conn) {
+    const code = codeOf(conn);
+    const entry = addConn(code, conn, (conn.metadata && conn.metadata.name) || code, false);
+    entry.incomingRequest = true;
+  }
+
+  function addConn(code, conn, name, ready) {
+    const old = conns.get(code);
+    if (old && old.conn !== conn) { try { old.conn.close(); } catch {} }
+    const entry = { code, conn, name, ready, selected: true, queue: Promise.resolve(), rx: null, sending: new Map() };
+    conns.set(code, entry);
+    conn.on('data', (d) => onData(entry, d));
+    conn.on('close', () => onClose(entry));
+    conn.on('error', (e) => { console.warn('conn error', e); onClose(entry); });
+    renderDevices();
+    return entry;
+  }
+
+  function onClose(entry) {
+    if (conns.get(entry.code) !== entry) return;
+    conns.delete(entry.code);
+    if (entry.rx) failRx(entry, 'Connection lost');
+    for (const x of entry.sending.values()) x.abort = 'Connection lost';
+    if (entry.ready) toast(entry.name + ' disconnected');
+    renderDevices();
+  }
+
+  // ---------- approval dialog ----------
+  const askQueue = [];
+  function ask(entry) {
+    return new Promise((resolve) => { askQueue.push({ entry, resolve }); if (askQueue.length === 1) showAsk(); });
+  }
+  function showAsk() {
+    const item = askQueue[0]; if (!item) return;
+    $('askText').textContent = `"${item.entry.name}" (code ${item.entry.code}) wants to connect and exchange files with this device.`;
+    $('askTrust').checked = false;
+    const dlg = $('askDlg');
+    const done = (ok) => {
+      $('askYes').onclick = $('askNo').onclick = null;
+      if (ok && $('askTrust').checked) { trusted.add(item.entry.code); store.set('trusted', [...trusted]); }
+      dlg.close(); askQueue.shift(); item.resolve(ok); setTimeout(showAsk, 50);
+    };
+    $('askYes').onclick = () => done(true);
+    $('askNo').onclick = () => done(false);
+    dlg.showModal();
+  }
+
+  // ---------- protocol ----------
+  async function onData(entry, data) {
+    if (typeof data !== 'string') { onChunk(entry, data); return; }
+    let m; try { m = JSON.parse(data); } catch { return; }
+    const conn = entry.conn;
+    switch (m.t) {
+      case 'hello': { // we are the receiver of the connection request
+        entry.name = String(m.name || entry.code).slice(0, 40); renderDevices();
+        const ok = trusted.has(entry.code) || await ask(entry);
+        if (!conn.open) return;
+        if (ok) { sendJSON(conn, { t: 'accept', name: settings.name, trust: trusted.has(entry.code) }); markReady(entry); }
+        else { sendJSON(conn, { t: 'reject' }); setTimeout(() => conn.close(), 300); }
+        break;
+      }
+      case 'accept':
+        entry.name = String(m.name || entry.code).slice(0, 40);
+        if (entry.onAccepted) entry.onAccepted();
+        if (m.trust && !trusted.has(entry.code)) { trusted.add(entry.code); store.set('trusted', [...trusted]); }
+        markReady(entry); break;
+      case 'reject':
+        toast(entry.code + ' declined the connection.'); setTimeout(() => conn.close(), 100); break;
+      case 'file': if (entry.ready) startRx(entry, m); break;
+      case 'end': if (entry.ready) await finishRx(entry, m.id); break;
+      case 'abort': if (entry.rx && entry.rx.id === m.id) failRx(entry, 'Cancelled by sender'); break;
+      case 'cancel': { const x = entry.sending.get(m.id); if (x) x.abort = 'Cancelled by receiver'; break; }
+      case 'got': { const x = entry.sending.get(m.id); if (x) x.delivered = true; break; }
+    }
+  }
+  function markReady(entry) {
+    if (entry.ready) return;
+    entry.ready = true; renderDevices(); toast('Connected to ' + entry.name);
+  }
+
+  // ---------- devices UI ----------
+  function renderDevices() {
+    const box = $('devices'); box.innerHTML = '';
+    const list = [...conns.values()];
+    if (!list.length) box.innerHTML = '<div class="empty">No devices connected yet.</div>';
+    for (const e of list) {
+      const row = document.createElement('div'); row.className = 'device';
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = e.selected; cb.disabled = !e.ready;
+      cb.setAttribute('aria-label', 'Send to ' + e.name);
+      cb.onchange = () => { e.selected = cb.checked; updateSend(); };
+      const nm = document.createElement('div'); nm.className = 'name';
+      const b = document.createElement('b'); b.textContent = e.name;
+      const s = document.createElement('span'); s.className = 'small';
+      s.textContent = e.ready ? `Code ${e.code} · connected` : (e.incomingRequest ? `Code ${e.code} · asking to connect` : `Code ${e.code} · waiting for approval`);
+      nm.append(b, s);
+      const x = document.createElement('button'); x.className = 'danger'; x.textContent = 'Disconnect';
+      x.onclick = () => { try { e.conn.close(); } catch {} onClose(e); };
+      row.append(cb, nm, x); box.append(row);
+    }
+    updateSend();
+    renderNearby();
+  }
+  function targets() { return [...conns.values()].filter(e => e.ready && e.selected && e.conn.open); }
+  function updateSend() {
+    const n = targets().length, ready = [...conns.values()].filter(e => e.ready).length;
+    $('pickBtn').disabled = n === 0;
+    $('sendHint').textContent = ready === 0 ? 'Connect a device first.' : n === 0 ? 'Tick at least one device above.' :
+      `Files will go to ${n} device${n > 1 ? 's' : ''}.`;
+  }
+
+  // ---------- transfers UI ----------
+  function xferRow(dir, name, size, peerName) {
+    const box = $('xfers'); const empty = box.querySelector('.empty'); if (empty) empty.remove();
+    const el = document.createElement('div'); el.className = 'xfer';
+    el.innerHTML = '<div class="top"><span class="dir"></span><span class="fname"></span><button class="danger">Cancel</button></div>' +
+      '<div class="bar"><i></i></div><div class="small info"></div><div class="actions" hidden></div>';
+    el.querySelector('.dir').textContent = dir === 'out' ? '↑' : '↓';
+    el.querySelector('.fname').textContent = name;
+    box.prepend(el);
+    const ui = {
+      el, size, start: performance.now(), last: 0,
+      progress(done) {
+        const now = performance.now(); if (now - ui.last < 150 && done < size) return; ui.last = now;
+        const pct = size ? Math.min(100, done / size * 100) : 100;
+        el.querySelector('.bar > i').style.width = pct.toFixed(1) + '%';
+        const secs = (now - ui.start) / 1000, rate = done / Math.max(secs, 0.001);
+        el.querySelector('.info').textContent = `${dir === 'out' ? 'To' : 'From'} ${peerName} · ${fmtBytes(done)} of ${fmtBytes(size)} · ${fmtBytes(rate)}/s` +
+          (done < size && rate > 0 ? ` · ${fmtTime((size - done) / rate)} left` : '');
+      },
+      finish(text, ok = true) {
+        el.classList.add(ok ? 'done' : 'fail');
+        if (ok) el.querySelector('.bar > i').style.width = '100%';
+        el.querySelector('.info').textContent = text;
+        el.querySelector('.top button').remove();
+      },
+      onCancel(fn) { el.querySelector('.top button').onclick = fn; },
+      actions() { const a = el.querySelector('.actions'); a.hidden = false; return a; },
+    };
+    ui.progress(0);
+    return ui;
+  }
+
+  // ---------- wake lock (keep screen on during transfers) ----------
+  let wakeLock = null, active = 0;
+  async function busy(delta) {
+    active += delta;
+    try {
+      if (active > 0 && !wakeLock && 'wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
+      if (active <= 0 && wakeLock) { await wakeLock.release(); wakeLock = null; }
+    } catch {}
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && active > 0) { active--; busy(1); } });
+
+  // ---------- sending ----------
+  function sendFiles(files) {
+    const ts = targets();
+    if (!ts.length) { toast('No device selected.'); return; }
+    for (const e of ts) for (const f of files) {
+      e.queue = e.queue.then(() => sendOne(e, f)).catch(err => console.warn(err));
+    }
+  }
+  function waitDrain(dc) {
+    if (dc.bufferedAmount <= HIGH_WATER) return Promise.resolve();
+    return new Promise((res) => {
+      dc.bufferedAmountLowThreshold = LOW_WATER;
+      const t = setInterval(check, 100);
+      function check() { if (dc.bufferedAmount <= LOW_WATER || dc.readyState !== 'open') { clearInterval(t); dc.removeEventListener('bufferedamountlow', check); res(); } }
+      dc.addEventListener('bufferedamountlow', check);
+    });
+  }
+  async function sendOne(entry, file) {
+    const conn = entry.conn;
+    if (!conn.open) return;
+    const id = uid();
+    const job = { abort: null, delivered: false };
+    entry.sending.set(id, job);
+    const ui = xferRow('out', file.name, file.size, entry.name);
+    ui.onCancel(() => { job.abort = 'Cancelled'; try { sendJSON(conn, { t: 'abort', id }); } catch {} });
+    busy(1);
+    try {
+      sendJSON(conn, { t: 'file', id, name: file.name, size: file.size, type: file.type || 'application/octet-stream' });
+      const dc = conn.dataChannel;
+      let offset = 0;
+      while (offset < file.size) {
+        if (job.abort) throw new Error(job.abort);
+        const block = await file.slice(offset, Math.min(offset + READ_BLOCK, file.size)).arrayBuffer();
+        for (let p = 0; p < block.byteLength; p += CHUNK) {
+          if (job.abort) throw new Error(job.abort);
+          if (!conn.open) throw new Error('Connection lost');
+          await waitDrain(dc);
+          conn.send(block.slice(p, Math.min(p + CHUNK, block.byteLength)));
+          ui.progress(Math.max(0, offset + p + CHUNK - dc.bufferedAmount));
+        }
+        offset += block.byteLength;
+      }
+      sendJSON(conn, { t: 'end', id });
+      ui.progress(file.size);
+      // wait for receiver confirmation (up to 2 minutes for slow disks)
+      const t0 = Date.now();
+      while (!job.delivered && !job.abort && conn.open && Date.now() - t0 < 120000) await new Promise(r => setTimeout(r, 200));
+      if (job.abort) throw new Error(job.abort);
+      ui.finish(job.delivered ? `Delivered to ${entry.name} · ${fmtBytes(file.size)} in ${(performance.now() - ui.start) < 1000 ? 'under 1s' : fmtTime((performance.now() - ui.start) / 1000)}` : `Sent to ${entry.name} (no confirmation)`, true);
+    } catch (err) {
+      ui.finish(String(err.message || err), false);
+    } finally {
+      entry.sending.delete(id);
+      busy(-1);
+    }
+  }
+
+  // ---------- receiving ----------
+  let opfsDir = null;
+  async function getOpfs() {
+    if (opfsDir !== null) return opfsDir || null;
+    try {
+      if (!navigator.storage || !navigator.storage.getDirectory || !window.FileSystemFileHandle || !FileSystemFileHandle.prototype.createWritable) throw 0;
+      const root = await navigator.storage.getDirectory();
+      opfsDir = await root.getDirectoryHandle('incoming', { create: true });
+      return opfsDir;
+    } catch { opfsDir = false; return null; }
+  }
+  async function cleanOpfs() {
+    const dir = await getOpfs(); if (!dir) return;
+    try { for await (const name of dir.keys()) await dir.removeEntry(name).catch(() => {}); } catch {}
+  }
+
+  async function startRx(entry, m) {
+    if (entry.rx) failRx(entry, 'Interrupted');
+    const size = Number(m.size) || 0;
+    const rx = { id: String(m.id), name: String(m.name || 'file').slice(0, 255), size, type: String(m.type || ''), got: 0,
+                 parts: [], pending: [], pendingBytes: 0, writer: null, handle: null, writeChain: Promise.resolve(), failed: false };
+    entry.rx = rx;
+    rx.ui = xferRow('in', rx.name, size, entry.name);
+    rx.ui.onCancel(() => { try { sendJSON(entry.conn, { t: 'cancel', id: rx.id }); } catch {} failRx(entry, 'Cancelled'); });
+    busy(1);
+    rx.ready = (async () => {
+      const dir = size > 32 * 1024 * 1024 ? await getOpfs() : null;
+      if (dir) {
+        try { rx.handle = await dir.getFileHandle(rx.id, { create: true }); rx.writer = await rx.handle.createWritable(); }
+        catch (e) { rx.handle = null; rx.writer = null; }
+      }
+      if (!rx.writer && size > MEMORY_WARN) toast('Large file: this browser keeps it in memory. Very large files may fail here.');
+    })();
+  }
+  function onChunk(entry, buf) {
+    const rx = entry.rx; if (!rx || rx.failed) return;
+    rx.got += buf.byteLength;
+    rx.pending.push(buf); rx.pendingBytes += buf.byteLength;
+    if (rx.pendingBytes >= WRITE_BATCH) flushRx(rx);
+    rx.ui.progress(rx.got);
+  }
+  function flushRx(rx) {
+    if (!rx.pending.length) return rx.writeChain;
+    const parts = rx.pending; rx.pending = []; rx.pendingBytes = 0;
+    rx.writeChain = rx.writeChain.then(async () => {
+      await rx.ready;
+      if (rx.failed) return;
+      if (rx.writer) await rx.writer.write(new Blob(parts));
+      else rx.parts.push(new Blob(parts));
+    }).catch((e) => { rx.failed = true; rx.error = e; });
+    return rx.writeChain;
+  }
+  async function finishRx(entry, id) {
+    const rx = entry.rx; if (!rx || rx.id !== id) return;
+    entry.rx = null;
+    await flushRx(rx);
+    busy(-1);
+    if (rx.failed) { rx.ui.finish('Could not save: ' + (rx.error && rx.error.message || 'storage error') + ' (device may be out of space)', false); return; }
+    let file;
+    try {
+      if (rx.writer) { await rx.writer.close(); file = await rx.handle.getFile(); }
+      else file = new Blob(rx.parts, { type: rx.type });
+    } catch (e) { rx.ui.finish('Could not save: ' + e.message, false); return; }
+    if (file.size !== rx.size) { rx.ui.finish(`Incomplete (${fmtBytes(file.size)} of ${fmtBytes(rx.size)})`, false); return; }
+    try { sendJSON(entry.conn, { t: 'got', id }); } catch {}
+    const named = new File([file], rx.name, { type: rx.type || file.type || 'application/octet-stream' });
+    rx.ui.finish(`From ${entry.name} · ${fmtBytes(rx.size)} · received`, true);
+    addSaveButtons(rx.ui, named);
+    toast('Received ' + rx.name);
+  }
+  function failRx(entry, why) {
+    const rx = entry.rx; if (!rx) return;
+    entry.rx = null; rx.failed = true;
+    rx.ui.finish(why, false); busy(-1);
+    rx.ready.then(async () => { try { if (rx.writer) await rx.writer.abort(); } catch {} try { if (rx.handle) await opfsDir.removeEntry(rx.id); } catch {} });
+  }
+  function addSaveButtons(ui, file) {
+    const a = ui.actions();
+    const url = URL.createObjectURL(file);
+    const save = document.createElement('a'); save.className = 'btn'; save.href = url; save.download = file.name; save.textContent = 'Save';
+    save.rel = 'noopener';
+    a.append(save);
+    if (/^(image|video|audio)\/|^application\/pdf|^text\//.test(file.type)) {
+      const open = document.createElement('a'); open.className = 'btn ghost'; open.href = url; open.target = '_blank'; open.textContent = 'Open'; open.rel = 'noopener';
+      a.append(open);
+    }
+    if (navigator.canShare && (() => { try { return navigator.canShare({ files: [file] }); } catch { return false; } })()) {
+      const sh = document.createElement('button'); sh.className = 'ghost'; sh.textContent = isIOS ? 'Share / Save to Photos' : 'Share';
+      sh.onclick = async () => { try { await navigator.share({ files: [file], title: file.name }); } catch (e) { if (e.name !== 'AbortError') toast('Sharing not available: use Save.'); } };
+      a.append(sh);
+    }
+    if (isIOS) { const h = document.createElement('div'); h.className = 'hint'; h.style.flexBasis = '100%';
+      h.textContent = 'Save puts it in Files → Downloads. Use Share to save photos/videos to Photos.'; ui.el.append(h); }
+  }
+
+
+  // ---------- nearby (same Wi-Fi) discovery ----------
+  // Devices behind the same router share one public IPv4 address. Each device learns it via STUN,
+  // hashes it into a "room" name, and claims one of a few well-known slot IDs on the signaling server.
+  // Devices in the same room probe each other's slots, then confirm they really are on the same
+  // local network by checking that WebRTC picked a direct local (host) route. Only then do they
+  // exchange names and appear in the "Nearby" list. No files move over these probe links.
+  const SLOTS = 10;
+  const nearby = new Map();   // code -> { code, name, conn }
+  const probes = new Set();   // all live beacon connections
+  let beacon = null, roomKey = null, nearbyState = 'searching', lastIpCheck = 0;
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  function publicIPv4() {
+    const test = store.get('testIp', null); if (test) return Promise.resolve(test);
+    return new Promise((resolve) => {
+      let pc, settled = false;
+      const done = (v) => { if (settled) return; settled = true; clearTimeout(t); try { pc.close(); } catch {} resolve(v); };
+      const t = setTimeout(() => done(null), 6000);
+      try {
+        pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, { urls: 'stun:stun.cloudflare.com:3478' }] });
+        pc.createDataChannel('ip');
+        pc.onicecandidate = (e) => {
+          if (!e.candidate) return done(null);
+          const c = e.candidate.candidate || '';
+          const m = c.match(/ (\d{1,3}(?:\.\d{1,3}){3}) \d+ typ srflx/);
+          if (m) done(m[1]);
+        };
+        pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => done(null));
+      } catch { done(null); }
+    });
+  }
+  async function hashRoom(ip) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('quickshare-room|' + ip));
+    return [...new Uint8Array(buf)].slice(0, 6).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  const slotId = (key, n) => PREFIX + 'lan-' + key + '-' + n;
+
+  function stopNearby() {
+    if (beacon) { try { beacon.destroy(); } catch {} }
+    beacon = null;
+    for (const c of probes) { try { c.close(); } catch {} }
+    probes.clear(); nearby.clear();
+  }
+  async function startNearby(force) {
+    if (settings.discover === false) { stopNearby(); roomKey = null; setNearby('off'); return; }
+    if (!window.RTCPeerConnection || !crypto.subtle) { setNearby('unavailable'); return; }
+    lastIpCheck = Date.now();
+    if (!beacon) setNearby('searching');
+    const ip = await publicIPv4();
+    if (!ip) { if (!beacon) setNearby('unavailable'); return; }
+    const key = await hashRoom(ip);
+    if (!force && key === roomKey && beacon && !beacon.destroyed) { probeAll(); return; }
+    stopNearby(); roomKey = key; setNearby('searching');
+    claimSlot(0, key);
+  }
+  function claimSlot(slot, key) {
+    if (key !== roomKey) return;
+    if (slot >= SLOTS) { setNearby('full'); return; }
+    const b = new Peer(slotId(key, slot), peerOptions());
+    b._slot = slot; beacon = b;
+    b.on('open', () => { if (beacon !== b) return; setNearby('ready'); probeAll(); });
+    b.on('connection', (c) => { if (beacon === b) watchProbe(c, false); else c.close(); });
+    b.on('error', (err) => {
+      if (beacon !== b) return;
+      if (err.type === 'unavailable-id') { try { b.destroy(); } catch {} claimSlot(slot + 1, key); return; }
+      if (err.type === 'peer-unavailable') return; // empty slot, expected
+      console.warn('nearby', err.type);
+    });
+    b.on('disconnected', () => setTimeout(() => { if (beacon === b && b.disconnected && !b.destroyed) b.reconnect(); }, 2000));
+  }
+  function probeAll() {
+    const b = beacon; if (!b || b.disconnected || b.destroyed || !b.open) return;
+    for (let n = 0; n < SLOTS; n++) {
+      if (n === b._slot) continue;
+      const id = slotId(roomKey, n);
+      if ([...probes].some(c => c.peer === id)) continue;
+      watchProbe(b.connect(id, { reliable: true, serialization: 'raw' }), true);
+    }
+  }
+  async function isLocalRoute(c) {
+    const pc = c.peerConnection; if (!pc) return false;
+    const priv = (a) => !a || /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|f[cd]|fe80|.*\.local$)/i.test(a);
+    for (let i = 0; i < 15; i++) {
+      try {
+        const stats = await pc.getStats(); const byId = new Map(); let pair = null;
+        stats.forEach(r => byId.set(r.id, r));
+        stats.forEach(r => { if (r.type === 'transport' && r.selectedCandidatePairId) pair = byId.get(r.selectedCandidatePairId) || pair; });
+        if (!pair) stats.forEach(r => { if (r.type === 'candidate-pair' && (r.selected || (r.nominated && r.state === 'succeeded'))) pair = r; });
+        if (pair) {
+          const l = byId.get(pair.localCandidateId), r = byId.get(pair.remoteCandidateId);
+          if (l && r) return l.candidateType === 'host' && (r.candidateType === 'host' || (r.candidateType === 'prflx' && priv(r.address || r.ip)));
+        }
+      } catch {}
+      await sleep(300);
+    }
+    return false;
+  }
+  function watchProbe(c, mine) {
+    probes.add(c);
+    const timer = setTimeout(() => { if (!c.open) { try { c.close(); } catch {} probes.delete(c); } }, 15000);
+    let verified = false, info = null;
+    const accept = () => {
+      if (!verified || !info || !c.open) return;
+      const code = info.code;
+      const cur = nearby.get(code);
+      if (cur && cur.conn !== c && cur.conn.open) {
+        // Two links between the same pair: keep the one started by the device with the smaller code.
+        const keepThis = mine ? myCode < code : code < myCode;
+        if (!keepThis) { c._dup = true; c.close(); return; }
+        cur.conn._dup = true; try { cur.conn.close(); } catch {}
+      }
+      nearby.set(code, { code, name: info.name, conn: c });
+      renderNearby(); autoConnect(code);
+    };
+    c.on('open', async () => {
+      clearTimeout(timer);
+      verified = await isLocalRoute(c);
+      if (!verified || !c.open) { try { c.close(); } catch {} return; }
+      c.send(JSON.stringify({ t: 'hi', name: settings.name, code: myCode }));
+      accept();
+    });
+    c.on('data', (d) => {
+      if (typeof d !== 'string') return;
+      let m; try { m = JSON.parse(d); } catch { return; }
+      if (m.t !== 'hi' || !/^[A-Z0-9]{6}$/.test(m.code || '') || m.code === myCode) return;
+      info = { code: m.code, name: String(m.name || m.code).slice(0, 40) };
+      const cur = nearby.get(info.code); if (cur && cur.conn === c) { cur.name = info.name; renderNearby(); return; }
+      accept();
+    });
+    const gone = () => {
+      clearTimeout(timer); probes.delete(c);
+      for (const [code, n] of nearby) if (n.conn === c) nearby.delete(code);
+      renderNearby();
+    };
+    c.on('close', gone); c.on('error', gone);
+  }
+  function autoConnect(code) {
+    // Devices that trust each other connect by themselves; the smaller code starts it to avoid duplicates.
+    if (!trusted.has(code) || conns.has(code) || myCode > code) return;
+    connectTo(code, true);
+  }
+  function setNearby(state) { nearbyState = state; renderNearby(); }
+  function renderNearby() {
+    const box = $('nearby'); if (!box) return;
+    box.innerHTML = '';
+    const list = [...nearby.values()];
+    if (!list.length) {
+      const msg = {
+        searching: 'Looking for devices on this Wi-Fi…',
+        ready: 'No other devices found yet. Open QuickShare on another device connected to the same Wi-Fi.',
+        unavailable: "Can't check for nearby devices right now (offline or network blocks it). Use a code instead.",
+        full: 'Too many devices on this network to list. Use a code instead.',
+        off: 'Turned off in Settings.',
+      }[nearbyState] || '';
+      const d = document.createElement('div'); d.className = 'empty'; d.textContent = msg; box.append(d); return;
+    }
+    for (const n of list) {
+      const row = document.createElement('div'); row.className = 'device';
+      const ic = document.createElement('span'); ic.className = 'wifi'; ic.textContent = '📶'; ic.setAttribute('aria-hidden', 'true');
+      const nm = document.createElement('div'); nm.className = 'name';
+      const b = document.createElement('b'); b.textContent = n.name;
+      const s = document.createElement('span'); s.className = 'small';
+      const e = conns.get(n.code);
+      s.textContent = e && e.ready ? 'Connected' : e ? 'Waiting for approval…' : (trusted.has(n.code) ? 'Trusted · on this Wi-Fi' : 'On this Wi-Fi');
+      nm.append(b, s);
+      const btn = document.createElement('button'); btn.className = 'mini' + (e ? ' ghost' : '');
+      btn.textContent = e && e.ready ? 'Connected' : e ? 'Waiting' : 'Connect';
+      btn.disabled = !!e;
+      btn.onclick = () => connectTo(n.code);
+      row.append(ic, nm, btn); box.append(row);
+    }
+  }
+  // Re-check when the network may have changed (switching Wi-Fi, coming back to the app).
+  const recheck = () => { if (Date.now() - lastIpCheck > 8000) startNearby(false); else probeAll(); };
+  window.addEventListener('online', recheck);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') recheck(); });
+  if (navigator.connection && navigator.connection.addEventListener) navigator.connection.addEventListener('change', () => setTimeout(() => startNearby(false), 1500));
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (Date.now() - lastIpCheck > 60000) startNearby(false); else probeAll();
+    for (const code of nearby.keys()) autoConnect(code);
+  }, 20000);
+
+  // ---------- wiring ----------
+  $('connectForm').addEventListener('submit', (e) => { e.preventDefault(); connectTo($('peerCode').value); $('peerCode').value = ''; $('peerCode').blur(); });
+  $('pickBtn').onclick = () => $('fileInput').click();
+  $('fileInput').onchange = (e) => { const fs = [...e.target.files]; e.target.value = ''; if (fs.length) sendFiles(fs); };
+  const drop = $('drop');
+  ['dragenter', 'dragover'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); if (ev === 'drop' || e.target === document.documentElement) drop.classList.remove('over'); }));
+  document.addEventListener('drop', (e) => { const fs = [...(e.dataTransfer && e.dataTransfer.files || [])]; if (fs.length) { if (targets().length) sendFiles(fs); else toast('Connect a device first.'); } });
+
+  $('copyLinkBtn').onclick = async () => {
+    const link = inviteLink();
+    try {
+      if (navigator.share && isIOS) { await navigator.share({ title: 'Connect to my QuickShare', url: link }); return; }
+      await navigator.clipboard.writeText(link); toast('Invite link copied');
+    } catch (e) { if (e.name !== 'AbortError') toast(link); }
+  };
+
+  $('settingsBtn').onclick = () => {
+    $('setName').value = settings.name; $('setTurnUrl').value = settings.turnUrl; $('setTurnUser').value = settings.turnUser;
+    $('setTurnPass').value = settings.turnPass; $('setSignal').value = settings.signal; $('setNewCode').checked = false; $('setDiscover').checked = settings.discover !== false;
+    $('settingsDlg').showModal();
+  };
+  $('forgetTrusted').onclick = () => { trusted = new Set(); store.set('trusted', []); toast('Trusted devices cleared'); };
+  $('settingsDlg').addEventListener('close', () => {
+    if ($('settingsDlg').returnValue !== 'save') return;
+    const before = JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
+    settings = { name: $('setName').value.trim() || defaultName(), turnUrl: $('setTurnUrl').value.trim(), turnUser: $('setTurnUser').value.trim(),
+                 turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked };
+    store.set('settings', settings);
+    const restart = $('setNewCode').checked || before !== JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
+    if ($('setNewCode').checked) { myCode = newCode(); store.set('code', myCode); }
+    renderMe();
+    if (restart) { for (const e of conns.values()) { try { e.conn.close(); } catch {} } conns.clear(); renderDevices(); startPeer(); }
+    startNearby(true);
+    toast('Settings saved');
+  });
+
+  window.addEventListener('beforeunload', (e) => { if (active > 0) { e.preventDefault(); e.returnValue = ''; } });
+
+  // ---------- go ----------
+  if (typeof Peer === 'undefined') { setNet('off', 'Failed to load'); return; }
+  renderMe();
+  cleanOpfs();
+  startPeer();
+  startNearby(true);
+  window.__qs = { conns, nearby, get code() { return myCode; }, connectTo, sendFiles }; // for testing
+})();
+</script>
+</body>
+</html>
