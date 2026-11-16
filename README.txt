@@ -28,6 +28,22 @@ AUTOMATIC SAVING (Settings -> "Save received files automatically", on by default
 - iPhone / iPad: Apple does not let websites save to Photos without a tap. A banner appears at the top
   ("3 photos received") - one tap on "Save to Photos" saves them all.
 
+STABILITY (version 2.0)
+- Approved devices reconnect by themselves (no popup for 24 hours; never with "Always allow").
+- If a link drops mid-transfer, the file continues from where it stopped once the devices reconnect.
+- Send to a device that is closed: the file waits and goes as soon as that device opens QuickShare.
+- "Cancel all" stops every transfer on both sides; "Clear finished" tidies the list.
+- Android: repeated file names are saved as "photo (1).jpg" so Chrome doesn't ask "Download again?".
+
+TROUBLESHOOTING
+- Tap the 🩺 button: it checks internet, the connection service, your network, each device, screen lock,
+  saving and large-file support, and says how to fix anything that's wrong.
+- "Copy report" gives a text summary (no files, no personal data) to paste to whoever helps you.
+
+SHARE FROM OTHER APPS (Android)
+- After installing QuickShare (Chrome menu -> Install app), it appears in the Android share sheet:
+  Photos/Files -> Share -> QuickShare -> pick a device. (iPhone doesn't allow web apps in its share sheet.)
+
 GOOD TO KNOW
 - Nearby list: only devices that can reach each other directly over your local network are shown.
   Devices you marked "Always allow" reconnect automatically whenever both are open on the same Wi-Fi.
