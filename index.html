@@ -84,6 +84,8 @@
     transition: all .25s; max-width: 90vw; text-align: center; z-index: 10; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .awake { margin: -6px 2px 12px; }
+  .awake.warn { color: var(--amber); font-weight: 600; }
   .banner { position: sticky; top: calc(env(safe-area-inset-top) + 8px); z-index: 5; border: 2px solid var(--blue);
     box-shadow: 0 6px 24px rgba(0,0,0,.12); }
 </style>
@@ -97,6 +99,7 @@
       <button class="plain" id="settingsBtn" aria-label="Settings">⚙︎</button>
     </div>
   </header>
+  <div class="small awake" id="awakeNote" hidden></div>
 
   <section class="card banner" id="saveBanner" hidden>
     <div id="saveBannerText" style="font-weight:600"></div>
@@ -161,7 +164,7 @@
     <div id="xfers"><div class="empty">Nothing yet.</div></div>
   </section>
 
-  <p class="small" style="text-align:center">Files go directly between devices and are not uploaded to any server.<br>Keep this screen open while a transfer runs.</p>
+  <p class="small" style="text-align:center">Files go directly between devices and are not uploaded to any server.<br>Stay in QuickShare while a transfer runs — switching apps or locking the phone pauses it.</p>
 </main>
 
 <dialog id="settingsDlg">
@@ -190,6 +193,8 @@
       </div>
     </div>
     <p class="small" id="autoSaveNote" style="margin:4px 0 0 28px" hidden></p>
+    <label class="check"><input type="checkbox" id="setKeepAwake"> Keep the screen on while QuickShare is open</label>
+    <p class="small" style="margin:0 0 4px 28px">Phones pause websites when the screen locks, which stops transfers. The screen is always kept on during a transfer.</p>
     <label class="check"><input type="checkbox" id="setDiscover"> Find devices on the same Wi-Fi automatically</label>
     <label class="check"><input type="checkbox" id="setNewCode"> Give this device a new code</label>
     <button class="danger" type="button" id="forgetTrusted" style="margin-top:6px">Forget all trusted devices</button>
@@ -256,7 +261,7 @@
   }
 
   // ---------- settings ----------
-  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true }, store.get('settings', {}));
+  let settings = Object.assign({ name: defaultName(), turnUrl: '', turnUser: '', turnPass: '', signal: '', discover: true, autoSave: true, keepAwake: true }, store.get('settings', {}));
   let myCode = store.get('code', null) || newCode();
   store.set('code', myCode);
   let trusted = new Set(store.get('trusted', []));
@@ -486,16 +491,49 @@
     return ui;
   }
 
-  // ---------- wake lock (keep screen on during transfers) ----------
-  let wakeLock = null, active = 0;
-  async function busy(delta) {
-    active += delta;
-    try {
-      if (active > 0 && !wakeLock && 'wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
-      if (active <= 0 && wakeLock) { await wakeLock.release(); wakeLock = null; }
-    } catch {}
+  // ---------- keep the screen on ----------
+  // Web apps are paused when the screen locks (always on iPhone, soon after on Android), which stops transfers.
+  // So: keep the screen awake while QuickShare is open (setting, on by default) and always during transfers.
+  // Uses the Screen Wake Lock API; on iPhone (and browsers without it) also plays a tiny silent looping video,
+  // the classic way to stop auto-lock, because home-screen web apps on some iOS versions ignore the wake lock.
+  let wakeLock = null, wakeLockPending = false, active = 0, nosleep = null, awakeVideoOn = false;
+  function busy(delta) { active = Math.max(0, active + delta); applyKeepAwake(); }
+  function wantAwake() { return document.visibilityState === 'visible' && (settings.keepAwake !== false || active > 0); }
+  async function applyKeepAwake() {
+    const want = wantAwake();
+    if (want && 'wakeLock' in navigator && !wakeLock && !wakeLockPending) {
+      wakeLockPending = true;
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; renderAwake(); if (wantAwake()) setTimeout(applyKeepAwake, 500); });
+      } catch { wakeLock = null; }
+      wakeLockPending = false;
+    }
+    if (!want && wakeLock) { try { await wakeLock.release(); } catch {} wakeLock = null; }
+    const useVideo = isIOS || !('wakeLock' in navigator);
+    if (want && useVideo) {
+      if (!nosleep) {
+        nosleep = document.createElement('video');
+        nosleep.src = 'lib/nosleep.mp4'; nosleep.loop = true; nosleep.muted = true; nosleep.playsInline = true;
+        nosleep.setAttribute('playsinline', ''); nosleep.setAttribute('muted', ''); nosleep.setAttribute('aria-hidden', 'true');
+        nosleep.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0.01;pointer-events:none;';
+        document.body.append(nosleep);
+      }
+      try { await nosleep.play(); awakeVideoOn = true; } catch { awakeVideoOn = false; }
+    } else if (nosleep && !want) { nosleep.pause(); awakeVideoOn = false; }
+    renderAwake();
   }
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && active > 0) { active--; busy(1); } });
+  function renderAwake() {
+    const el = $('awakeNote'); if (!el) return;
+    const on = !!wakeLock || awakeVideoOn;
+    if (settings.keepAwake === false && active === 0) { el.hidden = true; return; }
+    el.hidden = false;
+    el.textContent = on ? '☀️ Screen will stay on while QuickShare is open' : '☀️ Tap anywhere to keep the screen on';
+    el.classList.toggle('warn', !on);
+  }
+  document.addEventListener('visibilitychange', applyKeepAwake);
+  // Some browsers (iPhone especially) only allow this after a tap, so retry on every tap until it is on.
+  document.addEventListener('pointerdown', () => { if (wantAwake() && !(wakeLock || awakeVideoOn)) applyKeepAwake(); }, true);
 
   // ---------- sending ----------
   function sendFiles(files) {
@@ -996,6 +1034,7 @@
     $('setName').value = settings.name; $('setTurnUrl').value = settings.turnUrl; $('setTurnUser').value = settings.turnUser;
     $('setTurnPass').value = settings.turnPass; $('setSignal').value = settings.signal; $('setNewCode').checked = false; $('setDiscover').checked = settings.discover !== false;
     $('setAutoSave').checked = settings.autoSave !== false; renderFolderUI();
+    $('setKeepAwake').checked = settings.keepAwake !== false;
     $('settingsDlg').showModal();
   };
   $('forgetTrusted').onclick = () => { trusted = new Set(); store.set('trusted', []); toast('Trusted devices cleared'); };
@@ -1003,8 +1042,8 @@
     if ($('settingsDlg').returnValue !== 'save') return;
     const before = JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
     settings = { name: $('setName').value.trim() || defaultName(), turnUrl: $('setTurnUrl').value.trim(), turnUser: $('setTurnUser').value.trim(),
-                 turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked, autoSave: $('setAutoSave').checked };
-    renderFolderUI();
+                 turnPass: $('setTurnPass').value, signal: $('setSignal').value.trim(), discover: $('setDiscover').checked, autoSave: $('setAutoSave').checked, keepAwake: $('setKeepAwake').checked };
+    renderFolderUI(); applyKeepAwake();
     store.set('settings', settings);
     const restart = $('setNewCode').checked || before !== JSON.stringify([settings.turnUrl, settings.turnUser, settings.turnPass, settings.signal]);
     if ($('setNewCode').checked) { myCode = newCode(); store.set('code', myCode); }
@@ -1023,7 +1062,8 @@
   startPeer();
   startNearby(true);
   loadFolder();
-  window.__qs = { conns, nearby, get code() { return myCode; }, connectTo, sendFiles,
+  applyKeepAwake();
+  window.__qs = { awake: () => ({ wakeLock: !!wakeLock, video: awakeVideoOn, note: $('awakeNote').textContent }), conns, nearby, get code() { return myCode; }, connectTo, sendFiles,
                   setFolder(h) { folderHandle = h; folderOk = true; renderFolderUI(); } }; // for testing // for testing
 })();
 </script>
